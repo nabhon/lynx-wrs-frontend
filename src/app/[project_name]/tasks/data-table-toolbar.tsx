@@ -6,7 +6,7 @@ import { X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "./data-table-view-options"
-import { priorities, statuses } from "./data/data"
+import { cycles, employees, priorities, sprints, statuses, types } from "./data/data"
 import { DataTableFacetedFilter } from "./data-table-faceted-filter"
 
 interface DataTableToolbarProps<TData> {
@@ -29,6 +29,27 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
+        {table.getColumn("cycle_id") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("cycle_id")}
+            title="Cycle"
+            options={cycles}
+          />
+        )}
+        {table.getColumn("sprint_id") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("sprint_id")}
+            title="Sprint"
+            options={sprints}
+          />
+        )}
+        {table.getColumn("type") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("type")}
+            title="Type"
+            options={types}
+          />
+        )}
         {table.getColumn("status") && (
           <DataTableFacetedFilter
             column={table.getColumn("status")}
@@ -36,11 +57,18 @@ export function DataTableToolbar<TData>({
             options={statuses}
           />
         )}
-        {table.getColumn("priority") && (
+        {table.getColumn("priorities") && (
           <DataTableFacetedFilter
-            column={table.getColumn("priority")}
+            column={table.getColumn("priorities")}
             title="Priority"
             options={priorities}
+          />
+        )}
+        {table.getColumn("assigned_to_name") && (
+          <DataTableFacetedFilter
+            column={table.getColumn("assigned_to_name")}
+            title="Assignee"
+            options={employees}
           />
         )}
         {isFiltered && (

@@ -26,7 +26,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   title?: string
   options: {
     label: string
-    value: string
+    value: any
     icon?: React.ComponentType<{ className?: string }>
   }[]
 }
@@ -37,6 +37,7 @@ export function DataTableFacetedFilter<TData, TValue>({
   options,
 }: DataTableFacetedFilterProps<TData, TValue>) {
   const facets = column?.getFacetedUniqueValues()
+
   const selectedValues = new Set(column?.getFilterValue() as string[])
 
   return (
