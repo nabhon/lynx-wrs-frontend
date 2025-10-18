@@ -14,9 +14,11 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar"
+import AuthGuard from "@/providers/PathGuard"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
+    <AuthGuard>
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
@@ -47,5 +49,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {children}
       </SidebarInset>
     </SidebarProvider>
+    </AuthGuard>
   )
 }
