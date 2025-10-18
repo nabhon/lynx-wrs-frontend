@@ -158,8 +158,8 @@ export default function AddTaskDialog() {
       status: values.status,
       priority: values.priority,
       estimatePoints: values.estimatepoint || 0,
-      startDate: values.startdate?.toISOString(),
-      endDate: values.duedate?.toISOString(),
+      startDate: values.startdate ? values.startdate.toISOString() : null,
+      endDate: values.duedate ? values.duedate.toISOString() : null,
       assigneeId: values.assignee ? Number(values.assignee) : null,
       auditorId: values.auditor ? Number(values.auditor) : null,
     }
