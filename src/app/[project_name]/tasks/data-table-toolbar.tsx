@@ -2,7 +2,7 @@
 
 import { Table } from "@tanstack/react-table"
 import { X, CirclePlus } from "lucide-react"
-
+import AddTaskDialog from "./data-table-add-button"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { DataTableViewOptions } from "./data-table-view-options"
@@ -82,10 +82,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <Button variant="outline" size="sm" className="h-8 mx-2 lg:px-3">
-        <CirclePlus/>
-        New Task
-      </Button>
+      <AddTaskDialog />
       <DataTableViewOptions table={table} />
     </div>
   )

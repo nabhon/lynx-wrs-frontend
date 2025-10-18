@@ -101,6 +101,14 @@ export async function refreshService(): Promise<{ userId: string; role: string; 
     maxAge: 60 * 60, // 1 hour
   });
 
+  cookieStore.set("refreshToken", data.refreshToken, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
+
   return data;
 }
 

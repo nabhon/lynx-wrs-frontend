@@ -1,0 +1,502 @@
+"use client"
+
+import { useState } from "react"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { toast } from "sonner"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import {
+  Check,
+  ChevronsUpDown,
+  Calendar as CalendarIcon
+} from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form"
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog"
+
+// mock
+import { createTaskService } from "@/services/taskService"
+import { useProject } from "@/providers/ProjectProvider"
+
+// =========================
+// Schema
+// =========================
+const formSchema = z.object({
+  cycle: z.string().optional(),
+  sprint: z.string().optional(),
+  taskname: z.string().min(1, "Required"),
+  key: z.string().min(1, "Required"),
+  description: z.string().optional(),
+  type: z.string().min(1, "Required"),
+  status: z.string().min(1, "Required"),
+  priority: z.string().min(1, "Required"),
+  estimatepoint: z.coerce.number().optional(),
+  startdate: z.coerce.date().optional(),
+  duedate: z.coerce.date().optional(),
+  assignee: z.string().optional(),
+  auditor: z.string().optional(),
+})
+
+// =========================
+// Options
+// =========================
+const selectOptions = {
+    type: [
+    { value: "MIPO", label: "MIPO"},
+    { value: "MRPO", label: "MRPO"},
+    { value: "MIT", label: "MIT"},
+    { value: "MRT", label: "MRT"},
+    { value: "TGD", label: "TGD"},
+    { value: "RGD", label: "RGD" },
+    { value: "MGD", label: "MGD" },
+    { value: "TPD", label: "TPD" },
+    { value: "STD", label: "STD" },
+    { value: "SCD", label: "SCD" },
+    { value: "RD", label: "RD" },
+    { value: "US", label: "US" },
+    { value: "RPD", label: "RPD" },
+    { value: "SWD", label: "SWD" },
+    { value: "UCD", label: "UCD" },
+    { value: "AD", label: "AD" },
+    { value: "UCDS", label: "UCDS" },
+    { value: "SQ", label: "SQ" },
+    { value: "SD", label: "SD" },
+    { value: "DBD", label: "DBD" },
+    { value: "ER", label: "ER" },
+    { value: "DD", label: "DD" },
+    { value: "PN", label: "PN" },
+    { value: "CHECK", label: "CHECK" },
+    { value: "SRSD", label: "SRSD" },
+    { value: "VCD", label: "VCD" },
+    { value: "UXI", label: "UXI" },
+    { value: "SMD", label: "SMD" },
+    { value: "FMD", label: "FMD" },
+    { value: "SDW", label: "SDW" },
+    { value: "TRT", label: "TRT" },
+    { value: "POT", label: "POT" },
+    { value: "ETC", label: "ETC" },
+    { value: "MFT", label: "MFT" },
+    { value: "NWA", label: "NWA" },
+    ],
+  status: [
+    { label: "To Do", value: "TODO" },
+    { label: "In Progress", value: "IN_PROGRESS" },
+    { label: "Done", value: "DONE" },
+  ],
+  priority: [
+    { label: "Low", value: "LOW" },
+    { label: "Medium", value: "MEDIUM" },
+    { label: "High", value: "HIGH" },
+  ],
+  user: [
+    { label: "Alice", value: "1" },
+    { label: "Bob", value: "2" },
+    { label: "Charlie", value: "3" },
+  ],
+}
+
+// =========================
+// Component
+// =========================
+export default function AddTaskDialog() {
+  const [sending, setSending] = useState(false)
+  const [open, setOpen] = useState(false)
+  const {refreshProject} = useProject();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+    },
+  })
+
+  // submit
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setSending(true)
+    const payload = {
+      projectId: 1,
+      cycleCount: values.cycle ? Number(values.cycle) : 1,
+      sprintCount: values.sprint ? Number(values.sprint) : 1,
+      taskKey: values.key,
+      taskName: values.taskname,
+      description: values.description || "",
+      type: values.type,
+      status: values.status,
+      priority: values.priority,
+      estimatePoints: values.estimatepoint || 0,
+      startDate: values.startdate?.toISOString(),
+      endDate: values.duedate?.toISOString(),
+      assigneeId: values.assignee ? Number(values.assignee) : null,
+      auditorId: values.auditor ? Number(values.auditor) : null,
+    }
+
+    try {
+      const result = await createTaskService(payload)
+      toast.success(`Task "${result.taskName}" created successfully!`)
+      form.reset()
+        await refreshProject();
+      setOpen(false)
+    } catch (error) {
+      console.error(error)
+      toast.error("Failed to create task.")
+    } finally {
+      setSending(false)
+    }
+  }
+
+  // helper render for popover selects
+  const renderSelect = (
+    field: any,
+    label: string,
+    options: { label: string; value: string }[]
+  ) => (
+    <FormItem className="flex flex-col">
+      <FormLabel>{label}</FormLabel>
+      <Popover>
+        <PopoverTrigger asChild>
+          <FormControl>
+            <Button
+              variant="outline"
+              role="combobox"
+              className={cn(
+                "justify-between",
+                !field.value && "text-muted-foreground"
+              )}
+            >
+              {field.value
+                ? options.find((o) => o.value === field.value)?.label
+                : `Select ${label}`}
+              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+            </Button>
+          </FormControl>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-0">
+          <Command>
+            <CommandInput placeholder={`Search ${label.toLowerCase()}...`} />
+            <CommandList>
+              <CommandEmpty>No {label.toLowerCase()} found.</CommandEmpty>
+              <CommandGroup>
+                {options.map((opt) => (
+                  <CommandItem
+                    key={opt.value}
+                    onSelect={() => form.setValue(field.name, opt.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        opt.value === field.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    {opt.label}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+      <FormMessage />
+    </FormItem>
+  )
+
+  // =========================
+  // JSX
+  // =========================
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="h-8 mx-2">
+          Add Task
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className="max-w-4xl">
+        <DialogHeader>
+          <DialogTitle>Add Task</DialogTitle>
+          <DialogDescription>Fill in the task details below.</DialogDescription>
+        </DialogHeader>
+
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-4"
+          >
+            {/* cycle/sprint */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="cycle"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Cycle</FormLabel>
+                      <FormControl>
+                        <Input placeholder="1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="sprint"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Sprint</FormLabel>
+                      <FormControl>
+                        <Input placeholder="1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* name / key */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="taskname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Task Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Create new task" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="key"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Task Key</FormLabel>
+                      <FormControl>
+                        <Input placeholder="LYNX-1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* description */}
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Description</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Describe this task..."
+                      className="resize-none"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* type / status / priority */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-4">
+                <FormField
+                  control={form.control}
+                  name="type"
+                  render={({ field }) => renderSelect(field, "Type", selectOptions.type)}
+                />
+              </div>
+              <div className="col-span-4">
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => renderSelect(field, "Status", selectOptions.status)}
+                />
+              </div>
+              <div className="col-span-4">
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => renderSelect(field, "Priority", selectOptions.priority)}
+                />
+              </div>
+            </div>
+
+            {/* estimate points */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-12">
+                <FormField
+                  control={form.control}
+                  name="estimatepoint"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Estimate Point</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="1" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* start / due date */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="startdate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Start Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "justify-start text-left",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : "Pick a date"}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            className=""
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="duedate"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Due Date</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              className={cn(
+                                "justify-start text-left",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : "Pick a date"}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent align="start" className="p-0">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {/* assignee / auditor */}
+            <div className="grid grid-cols-12 gap-4">
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="assignee"
+                  render={({ field }) => renderSelect(field, "Assignee", selectOptions.user)}
+                />
+              </div>
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="auditor"
+                  render={({ field }) => renderSelect(field, "Auditor", selectOptions.user)}
+                />
+              </div>
+            </div>
+
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline" type="button" disabled={sending}>
+                  Cancel
+                </Button>
+              </DialogClose>
+              <Button type="submit" disabled={sending}>
+                {sending ? "Submitting..." : "Submit"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  )
+}
