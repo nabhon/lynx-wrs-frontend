@@ -1,6 +1,6 @@
 "use client"
 
-import { ChevronRight, type LucideIcon } from "lucide-react"
+import { ChevronRight, Circle } from "lucide-react"
 import {
   Collapsible,
   CollapsibleContent,
@@ -17,44 +17,39 @@ import {
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
 
+import type { ProjectItem } from "@/providers/ProjectListProvider"
+
 function slugify(title: string) {
-  return title.toLowerCase().replace(/\s+/g, "_")
+  return title.replace(/\s+/g, "_")
 }
 
-export function NavProjects({
-  projects,
-}: {
-  projects: {
-    title: string
-    icon?: LucideIcon
-    isActive?: boolean
-  }[]
-}) {
+export function NavProjects({ projects }: { projects: ProjectItem[] }) {
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((project) => {
-          const slug = slugify(project.title)
+          const slug = slugify(project.projectName)
           const subItems = [
             { title: "Overview", path: `/overview` },
             { title: "Task", path: `/tasks` },
           ]
           return (
             <Collapsible
-              key={project.title}
+              key={project.projectId}
               asChild
-              defaultOpen={project.isActive}
+              defaultOpen={false}
               className="group/collapsible"
             >
               <SidebarMenuItem>
                 <CollapsibleTrigger asChild>
-                  <SidebarMenuButton tooltip={project.title}>
-                    {project.icon && <project.icon />}
-                    <span>{project.title}</span>
+                  <SidebarMenuButton tooltip={project.projectName}>
+                    <Circle />
+                    <span>{project.projectName}</span>
                     <ChevronRight className="ml-auto transition-transform duration-200 group-data-[state=open]/collapsible:rotate-90" />
                   </SidebarMenuButton>
                 </CollapsibleTrigger>
+
                 <CollapsibleContent>
                   <SidebarMenuSub>
                     {subItems.map((sub) => (
@@ -66,15 +61,14 @@ export function NavProjects({
                         </SidebarMenuSubButton>
                       </SidebarMenuSubItem>
                     ))}
-                  </SidebarMenuSub>
-                  <SidebarMenuSub>
-                      <SidebarMenuSubItem key="Settings">
-                        <SidebarMenuSubButton asChild>
-                          <a href={`${slug}/settings`}>
-                            <span>Settings</span>
-                          </a>
-                        </SidebarMenuSubButton>
-                      </SidebarMenuSubItem>
+
+                    <SidebarMenuSubItem key="Settings">
+                      <SidebarMenuSubButton asChild>
+                        <a href={`/${slug}/settings`}>
+                          <span>Settings</span>
+                        </a>
+                      </SidebarMenuSubButton>
+                    </SidebarMenuSubItem>
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Table } from "@tanstack/react-table"
-import { X } from "lucide-react"
+import { X, CirclePlus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -29,16 +29,16 @@ export function DataTableToolbar<TData>({
           }
           className="h-8 w-[150px] lg:w-[250px]"
         />
-        {table.getColumn("cycle_id") && (
+        {table.getColumn("cycleCount") && (
           <DataTableFacetedFilter
-            column={table.getColumn("cycle_id")}
+            column={table.getColumn("cycleCount")}
             title="Cycle"
             options={cycles}
           />
         )}
-        {table.getColumn("sprint_id") && (
+        {table.getColumn("sprintCount") && (
           <DataTableFacetedFilter
-            column={table.getColumn("sprint_id")}
+            column={table.getColumn("sprintCount")}
             title="Sprint"
             options={sprints}
           />
@@ -64,9 +64,9 @@ export function DataTableToolbar<TData>({
             options={priorities}
           />
         )}
-        {table.getColumn("assigned_to_name") && (
+        {table.getColumn("assignedToName") && (
           <DataTableFacetedFilter
-            column={table.getColumn("assigned_to_name")}
+            column={table.getColumn("assignedToName")}
             title="Assignee"
             options={employees}
           />
@@ -82,6 +82,10 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
+      <Button variant="outline" size="sm" className="h-8 mx-2 lg:px-3">
+        <CirclePlus/>
+        New Task
+      </Button>
       <DataTableViewOptions table={table} />
     </div>
   )

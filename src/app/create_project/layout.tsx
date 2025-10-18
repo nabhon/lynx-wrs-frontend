@@ -8,14 +8,14 @@ import {
 } from "@/components/ui/sidebar"
 import AuthGuard from "@/providers/PathGuard"
 import { AppBreadcrumb } from "@/components/ui/app-bread-crumb"
+import AdminAuthGuard from "@/providers/AdminAuthGuard"
 import { ProjectListProvider } from "@/providers/ProjectListProvider"
-import { ProjectProvider } from "@/providers/ProjectProvider"
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <AuthGuard>
-      <ProjectListProvider>
-        <ProjectProvider>
+      <AdminAuthGuard>
+        <ProjectListProvider>
           <SidebarProvider>
             <AppSidebar />
             <SidebarInset>
@@ -29,13 +29,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   <AppBreadcrumb/>
                 </div>
               </header>
-
               {/* 👇 children will replace the content section */}
               {children}
             </SidebarInset>
           </SidebarProvider>
-        </ProjectProvider>
-      </ProjectListProvider>
+        </ProjectListProvider>
+      </AdminAuthGuard>
     </AuthGuard>
   )
 }

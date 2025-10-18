@@ -28,12 +28,12 @@ export const columns: ColumnDef<Task>[] = [
       checked={row.getIsSelected()} 
       onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" className=" translate-y-[2px]" /> ), enableSorting: false, enableHiding: false, },
   {
-    accessorKey: "cycle_id",
+    accessorKey: "cycleCount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cycle" />
     ),
     cell: ({ row }) => (
-      <div className="truncate">{row.getValue("cycle_id") ?? "-"}</div>
+      <div className="truncate">{row.getValue("cycleCount") ?? "-"}</div>
     ),
     filterFn: (row, id, value) => {
       const values = (row.getValue(id))
@@ -43,12 +43,12 @@ export const columns: ColumnDef<Task>[] = [
 
   // ✅ Sprint
   {
-    accessorKey: "sprint_id",
+    accessorKey: "sprintCount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Sprint" />
     ),
     cell: ({ row }) => (
-      <div className="truncate">{row.getValue("sprint_id") ?? "-"}</div>
+      <div className="truncate">{row.getValue("sprintCount") ?? "-"}</div>
     ),
     filterFn: (row, id, filterValues) => {
       const value = row.getValue(id)
@@ -57,11 +57,11 @@ export const columns: ColumnDef<Task>[] = [
   },
   // ✅ Task ID
   {
-    accessorKey: "id",
+    accessorKey: "key",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Task" />
     ),
-    cell: ({ row }) => <div className="w-[40px]">{row.getValue("id")}</div>,
+    cell: ({ row }) => <div className="w-[40px]">{row.getValue("key")}</div>,
     enableSorting: false,
     enableHiding: false,
   },
@@ -92,14 +92,14 @@ export const columns: ColumnDef<Task>[] = [
   },
   // ✅ Assigned To
   {
-    accessorKey: "assigned_to_name",
+    accessorKey: "assignedToName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Assignee" />
     ),
     cell: ({ row }) => {
       return (
         <div className="">
-          <span className="truncate font-medium">{row.getValue("assigned_to_name")}</span>
+          <span className="truncate font-medium">{row.getValue("assignedToName")}</span>
         </div>
       )
     },
@@ -107,14 +107,14 @@ export const columns: ColumnDef<Task>[] = [
   },
   // ✅ Auditor
   {
-    accessorKey: "audited_by_name",
+    accessorKey: "auditedByName",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Auditor" />
     ),
     cell: ({ row }) => {
       return (
         <div className="">
-          <span className="truncate font-medium">{row.getValue("audited_by_name")}</span>
+          <span className="truncate font-medium">{row.getValue("auditedByName")}</span>
         </div>
       )
     },
@@ -167,54 +167,54 @@ export const columns: ColumnDef<Task>[] = [
 
   // ✅ Estimate Points
   {
-    accessorKey: "estimate_points",
+    accessorKey: "estimatePoints",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Estimate Points" />
     ),
-    cell: ({ row }) => <div>{row.getValue("estimate_points") ?? "-"}</div>,
+    cell: ({ row }) => <div>{row.getValue("estimatePoints") ?? "-"}</div>,
   },
 
   // ✅ Actual Points
   {
-    accessorKey: "actual_points",
+    accessorKey: "actualPoints",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Actual Points" />
     ),
-    cell: ({ row }) => <div>{row.getValue("actual_points") ?? "-"}</div>,
+    cell: ({ row }) => <div>{row.getValue("actualPoints") ?? "-"}</div>,
   },
 
   // ✅ Start Date
   {
-    accessorKey: "start_date",
+    accessorKey: "startDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Start Date" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("start_date")
+      const date = row.getValue("startDate")
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },
 
   // ✅ Due Date
   {
-    accessorKey: "due_date",
+    accessorKey: "dueDate",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Due Date" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("due_date")
+      const date = row.getValue("dueDate")
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },
 
   // ✅ Finished At
   {
-    accessorKey: "finished_at",
+    accessorKey: "finishedAt",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Finished At" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("finished_at")
+      const date = row.getValue("finishedAt")
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },

@@ -2,15 +2,8 @@
 
 import * as React from "react"
 import {
-  AudioWaveform,
-  BookOpen,
   Bot,
-  Command,
-  Frame,
-  GalleryVerticalEnd,
-  Map,
   PieChart,
-  Settings2,
   SquareTerminal,
 } from "lucide-react"
 
@@ -24,7 +17,7 @@ import {
   SidebarHeader,
   SidebarRail,
 } from "@/components/ui/sidebar"
-import { Nav } from "react-day-picker"
+import { useProjectList } from "@/providers/ProjectListProvider"
 
 // This is sample data.
 const menu = {
@@ -35,34 +28,16 @@ const menu = {
   ]
 }
 
-const projects = {
-  project: [
-    {
-      title: "Project Alpha",
-      icon: Frame,
-      isActive: false,
-    },
-    {
-      title: "Project Beta",
-      icon: PieChart,
-      isActive: false,
-    },
-    {
-      title: "Project Gamma",
-      icon: Map,
-      isActive: false,
-    }
-  ]
-}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { projects }  = useProjectList();
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={menu.items} />
-        <NavProjects projects={projects.project} />
+        <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
         {/* <NavUser user={data.user} /> */}
