@@ -114,9 +114,42 @@ const selectOptions = {
     { value: "NWA", label: "NWA" },
     ],
   status: [
-    { label: "To Do", value: "TODO" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Done", value: "DONE" },
+    {
+      value: "TODO",
+      label: "To Do"
+    },
+    {
+      value: "IN_PROGRESS",
+      label: "In Progress"
+    },
+    {
+      value: "DONE",
+      label: "Done"
+    },
+    {
+      value: "CANCELED",
+      label: "Canceled"
+    },
+    {
+      value: "ON_HOLD",
+      label: "On Hold"
+    },
+    {
+      value: "REVIEW",
+      label: "Review"
+    },
+    {
+      value: "LATE",
+      label: "Late"
+    },
+    {
+      value: "BLOCKED",
+      label: "Blocked"
+    },
+    {
+      value: "REVISE",
+      label: "Revise"
+    },
   ],
   priority: [
     { label: "Low", value: "LOW" },
@@ -150,9 +183,6 @@ export default function AddTaskDialog() {
     setSending(true)
     const payload = {
       projectId: 1,
-      // include both id and count fields to satisfy CreateTaskPayload
-      cycleId: values.cycle ? Number(values.cycle) : 1,
-      sprintId: values.sprint ? Number(values.sprint) : 1,
       cycleCount: values.cycle ? Number(values.cycle) : 1,
       sprintCount: values.sprint ? Number(values.sprint) : 1,
       taskKey: values.key,
