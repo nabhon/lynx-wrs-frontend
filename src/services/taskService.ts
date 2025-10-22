@@ -6,8 +6,8 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL
 
 export type CreateTaskPayload = {
   projectId: number
-  cycleId: number
-  sprintId: number
+  cycleCount: number
+  sprintCount: number
   taskKey: string
   taskName: string
   description?: string

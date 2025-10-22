@@ -190,7 +190,7 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title="Start Date" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("startDate")
+      const date = row.getValue("startDate") as unknown as string | number | Date | null
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },
@@ -202,7 +202,7 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title="Due Date" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("dueDate")
+      const date = row.getValue("dueDate") as unknown as string | number | Date | null
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },
@@ -214,7 +214,7 @@ export const columns: ColumnDef<Task>[] = [
       <DataTableColumnHeader column={column} title="Finished At" />
     ),
     cell: ({ row }) => {
-      const date = row.getValue("finishedAt")
+      const date = row.getValue("finishedAt") as unknown as string | number | Date | null
       return <span>{date ? new Date(date).toLocaleDateString() : "-"}</span>
     },
   },

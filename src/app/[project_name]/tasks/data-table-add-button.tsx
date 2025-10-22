@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { useForm } from "react-hook-form"
+import { useForm, type SubmitHandler, type Resolver } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { toast } from "sonner"
@@ -114,9 +114,42 @@ const selectOptions = {
     { value: "NWA", label: "NWA" },
     ],
   status: [
-    { label: "To Do", value: "TODO" },
-    { label: "In Progress", value: "IN_PROGRESS" },
-    { label: "Done", value: "DONE" },
+    {
+      value: "TODO",
+      label: "To Do"
+    },
+    {
+      value: "IN_PROGRESS",
+      label: "In Progress"
+    },
+    {
+      value: "DONE",
+      label: "Done"
+    },
+    {
+      value: "CANCELED",
+      label: "Canceled"
+    },
+    {
+      value: "ON_HOLD",
+      label: "On Hold"
+    },
+    {
+      value: "REVIEW",
+      label: "Review"
+    },
+    {
+      value: "LATE",
+      label: "Late"
+    },
+    {
+      value: "BLOCKED",
+      label: "Blocked"
+    },
+    {
+      value: "REVISE",
+      label: "Revise"
+    },
   ],
   priority: [
     { label: "Low", value: "LOW" },
@@ -138,14 +171,15 @@ export default function AddTaskDialog() {
   const [open, setOpen] = useState(false)
   const {refreshProject} = useProject();
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-    },
+  type FormValues = z.infer<typeof formSchema>
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
+    defaultValues: {},
   })
 
   // submit
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
     setSending(true)
     const payload = {
       projectId: 1,
@@ -158,10 +192,10 @@ export default function AddTaskDialog() {
       status: values.status,
       priority: values.priority,
       estimatePoints: values.estimatepoint || 0,
-      startDate: values.startdate ? values.startdate.toISOString() : null,
-      endDate: values.duedate ? values.duedate.toISOString() : null,
-      assigneeId: values.assignee ? Number(values.assignee) : null,
-      auditorId: values.auditor ? Number(values.auditor) : null,
+      startDate: values.startdate ? values.startdate.toISOString() : undefined,
+      endDate: values.duedate ? values.duedate.toISOString() : undefined,
+      assigneeId: values.assignee ? Number(values.assignee) : undefined,
+      auditorId: values.auditor ? Number(values.auditor) : undefined,
     }
 
     try {
@@ -259,7 +293,7 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="cycle"
                   render={({ field }) => (
                     <FormItem>
@@ -274,7 +308,7 @@ export default function AddTaskDialog() {
               </div>
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="sprint"
                   render={({ field }) => (
                     <FormItem>
@@ -293,7 +327,7 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="taskname"
                   render={({ field }) => (
                     <FormItem>
@@ -308,7 +342,7 @@ export default function AddTaskDialog() {
               </div>
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="key"
                   render={({ field }) => (
                     <FormItem>
@@ -325,7 +359,7 @@ export default function AddTaskDialog() {
 
             {/* description */}
             <FormField
-              control={form.control}
+              control={form.control as any}
               name="description"
               render={({ field }) => (
                 <FormItem>
@@ -346,21 +380,21 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-4">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="type"
                   render={({ field }) => renderSelect(field, "Type", selectOptions.type)}
                 />
               </div>
               <div className="col-span-4">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="status"
                   render={({ field }) => renderSelect(field, "Status", selectOptions.status)}
                 />
               </div>
               <div className="col-span-4">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="priority"
                   render={({ field }) => renderSelect(field, "Priority", selectOptions.priority)}
                 />
@@ -371,7 +405,7 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-12">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="estimatepoint"
                   render={({ field }) => (
                     <FormItem>
@@ -390,7 +424,7 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="startdate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -429,7 +463,7 @@ export default function AddTaskDialog() {
 
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="duedate"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
@@ -470,14 +504,14 @@ export default function AddTaskDialog() {
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="assignee"
                   render={({ field }) => renderSelect(field, "Assignee", selectOptions.user)}
                 />
               </div>
               <div className="col-span-6">
                 <FormField
-                  control={form.control}
+                  control={form.control as any}
                   name="auditor"
                   render={({ field }) => renderSelect(field, "Auditor", selectOptions.user)}
                 />
