@@ -70,3 +70,23 @@ export async function getUsersService(): Promise<GetUsersResponse> {
   return response.json();
 }
 
+export async function deleteUserService(id: number) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const response = await fetch(`${API_URL}/users?id=${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to deleted users");
+  }
+  return response.json();
+}
+
+

@@ -30,6 +30,7 @@ import {
 import { Trash2 } from 'lucide-react';
 import { useUserList } from '@/providers/user-list-provider';
 import { DataTablePagination } from '@/app/[project_name]/tasks/data-table-pagination';
+import { deleteUserService } from '@/services/userService';
 
 //
 // 🧩 Shared type (matches backend UserDto)
@@ -44,18 +45,10 @@ export type UserDto = {
 };
 
 //
-// 🧰 Mock delete service
-//
-async function deleteUserService(userId: number) {
-  console.log(`🗑️ Delete user ID: ${userId}`);
-  return new Promise((resolve) => setTimeout(resolve, 500));
-}
-
-//
 // 🧩 UsersTable Component
 //
 const UsersTable = () => {
-  const { users: fetchedUsers, loading, error } = useUserList();
+  const { users: fetchedUsers, loading, error, refresh } = useUserList();
 
   const [users, setUsers] = useState<UserDto[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
@@ -67,10 +60,15 @@ const UsersTable = () => {
 
   const handleDelete = async (userId: number) => {
     setDeleting(true);
-    await deleteUserService(userId);
-    setUsers((prev) => prev.filter((u) => u.id !== userId));
-    setDeleting(false);
-    setSelectedUser(null);
+    try {
+      await deleteUserService(userId);
+      await refresh();
+      setSelectedUser(null);
+    } catch (error) {
+      console.error("Failed to delete user:", error);
+    } finally {
+      setDeleting(false);
+    }
   };
 
   //
