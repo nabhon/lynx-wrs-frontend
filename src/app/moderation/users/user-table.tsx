@@ -1,17 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import type { ColumnDef } from '@/components/ui/shadcn-io/table';
+import {
+  useReactTable,
+  getCoreRowModel,
+  getPaginationRowModel,
+  flexRender,
+  type ColumnDef,
+} from '@tanstack/react-table';
 import {
   TableBody,
   TableCell,
-  TableColumnHeader,
   TableHead,
   TableHeader,
-  TableHeaderGroup,
-  TableProvider,
   TableRow,
-} from '@/components/ui/shadcn-io/table';
+} from '@/components/ui/table';
+import { Button } from '@/components/ui/button';
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -23,9 +27,9 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from '@/components/ui/alert-dialog';
-import { Button } from '@/components/ui/button';
 import { Trash2 } from 'lucide-react';
 import { useUserList } from '@/providers/user-list-provider';
+import { DataTablePagination } from '@/app/[project_name]/tasks/data-table-pagination';
 
 //
 // 🧩 Shared type (matches backend UserDto)
@@ -51,19 +55,14 @@ async function deleteUserService(userId: number) {
 // 🧩 UsersTable Component
 //
 const UsersTable = () => {
-  // ✅ get users from provider
   const { users: fetchedUsers, loading, error } = useUserList();
 
-  // ✅ local state for UI updates (e.g., delete)
   const [users, setUsers] = useState<UserDto[]>([]);
   const [selectedUser, setSelectedUser] = useState<UserDto | null>(null);
   const [deleting, setDeleting] = useState(false);
 
-  // ✅ update local list when fetchedUsers change
   useEffect(() => {
-    if (fetchedUsers) {
-      setUsers(fetchedUsers);
-    }
+    if (fetchedUsers) setUsers(fetchedUsers);
   }, [fetchedUsers]);
 
   const handleDelete = async (userId: number) => {
@@ -80,27 +79,24 @@ const UsersTable = () => {
   const columns: ColumnDef<UserDto>[] = [
     {
       accessorKey: 'name',
-      header: ({ column }) => <TableColumnHeader column={column} title="Name" />,
+      header: 'Name',
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
-          <div
-            className="h-2 w-2 rounded-full ring-2 ring-background"
-            style={{ backgroundColor: '#10B981' }}
-          />
+          <div className="h-2 w-2 rounded-full bg-emerald-500" />
           <span className="font-medium">{row.original.name}</span>
         </div>
       ),
     },
     {
       accessorKey: 'role',
-      header: ({ column }) => <TableColumnHeader column={column} title="Role" />,
+      header: 'Role',
       cell: ({ row }) => (
         <span className="text-sm text-muted-foreground">{row.original.role}</span>
       ),
     },
     {
       accessorKey: 'lastLogin',
-      header: ({ column }) => <TableColumnHeader column={column} title="Last login" />,
+      header: 'Last Login',
       cell: ({ row }) =>
         row.original.lastLogin
           ? new Date(row.original.lastLogin).toLocaleDateString('th-TH', {
@@ -112,7 +108,7 @@ const UsersTable = () => {
     },
     {
       accessorKey: 'createdAt',
-      header: ({ column }) => <TableColumnHeader column={column} title="Created at" />,
+      header: 'Created At',
       cell: ({ row }) =>
         new Date(row.original.createdAt).toLocaleDateString('th-TH', {
           year: 'numeric',
@@ -122,7 +118,7 @@ const UsersTable = () => {
     },
     {
       accessorKey: 'updatedAt',
-      header: ({ column }) => <TableColumnHeader column={column} title="Updated at" />,
+      header: 'Updated At',
       cell: ({ row }) =>
         new Date(row.original.updatedAt).toLocaleDateString('th-TH', {
           year: 'numeric',
@@ -132,7 +128,7 @@ const UsersTable = () => {
     },
     {
       id: 'actions',
-      header: () => <div className="text-right">Actions</div>,
+      header: 'Actions',
       cell: ({ row }) => (
         <div className="flex justify-end">
           <AlertDialog>
@@ -171,10 +167,24 @@ const UsersTable = () => {
   ];
 
   //
+  // 🧠 TanStack Table setup
+  //
+  const table = useReactTable({
+    data: users,
+    columns,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    initialState: {
+      pagination: { pageIndex: 0, pageSize: 10 },
+    },
+  });
+
+  //
   // 🧭 Conditional rendering
   //
-  if (loading) return null; // show nothing while loading
-  if (error) return <p className="text-center text-red-500 py-8">Failed to load users</p>;
+  if (loading) return null;
+  if (error)
+    return <p className="text-center text-red-500 py-8">Failed to load users</p>;
   if (!users || users.length === 0)
     return <p className="text-center text-muted-foreground py-8">No users found</p>;
 
@@ -182,22 +192,35 @@ const UsersTable = () => {
   // 🧩 Render table
   //
   return (
-    <TableProvider columns={columns} data={users}>
-      <TableHeader>
-        {({ headerGroup }) => (
-          <TableHeaderGroup headerGroup={headerGroup} key={headerGroup.id}>
-            {({ header }) => <TableHead header={header} key={header.id} />}
-          </TableHeaderGroup>
-        )}
-      </TableHeader>
-      <TableBody>
-        {({ row }) => (
-          <TableRow key={row.id} row={row}>
-            {({ cell }) => <TableCell cell={cell} key={cell.id} />}
-          </TableRow>
-        )}
-      </TableBody>
-    </TableProvider>
+    <div className="space-y-4">
+      <table className="w-full border-collapse text-sm">
+        <thead className="border-b">
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th key={header.id} className="text-left px-4 py-2 font-medium">
+                  {flexRender(header.column.columnDef.header, header.getContext())}
+                </th>
+              ))}
+            </tr>
+          ))}
+        </thead>
+        <tbody>
+          {table.getRowModel().rows.map((row) => (
+            <tr key={row.id} className="border-b hover:bg-muted/30">
+              {row.getVisibleCells().map((cell) => (
+                <td key={cell.id} className="px-4 py-2">
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      {/* ✅ Pagination */}
+      <DataTablePagination table={table} />
+    </div>
   );
 };
 
