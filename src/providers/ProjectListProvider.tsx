@@ -7,7 +7,10 @@ import React, {
   useState,
   useCallback,
 } from "react";
-import { getProjectListService } from "@/services/projectService";
+import {
+  getProjectListService,
+  getAllProjectListService,
+} from "@/services/projectService";
 
 // =======================
 // Types
@@ -35,7 +38,11 @@ const ProjectListContext = createContext<ProjectListContextType | undefined>(
 // =======================
 // Provider
 // =======================
-export function ProjectListProvider({ children }: { children: React.ReactNode }) {
+export function ProjectListProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -44,9 +51,15 @@ export function ProjectListProvider({ children }: { children: React.ReactNode })
     setLoading(true);
     setError(null);
     try {
-      const data = await getProjectListService();
-      if (data?.items) setProjects(data.items);
-      else throw new Error("Invalid API response");
+      try {
+        const data = await getAllProjectListService();
+        if (data?.items) setProjects(data.items);
+        else throw new Error("Invalid API response");
+      } catch (err : any) {
+        const data = await getProjectListService();
+        if (data?.items) setProjects(data.items);
+        else throw new Error("Invalid API response");
+      }
     } catch (err: any) {
       setError(err.message || "Failed to load projects");
     } finally {
