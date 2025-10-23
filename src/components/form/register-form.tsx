@@ -1,26 +1,11 @@
-"use client"
-import {
-  useState
-} from "react"
-import {
-  toast
-} from "sonner"
-import {
-  useForm
-} from "react-hook-form"
-import {
-  zodResolver
-} from "@hookform/resolvers/zod"
-import {
-    email,
-  z
-} from "zod"
-import {
-  cn
-} from "@/lib/utils"
-import {
-  Button
-} from "@/components/ui/button"
+"use client";
+import { useState } from "react";
+import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { email, z } from "zod";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -29,55 +14,48 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import {
-  Input
-} from "@/components/ui/input"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
   CommandItem,
-  CommandList
-} from "@/components/ui/command"
+  CommandList,
+} from "@/components/ui/command";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/components/ui/popover"
-import {
-  Check,
-  ChevronsUpDown
-} from "lucide-react"
+} from "@/components/ui/popover";
+import { Check, ChevronsUpDown } from "lucide-react";
 
-import { RegisterUser } from "@/services/userService"
+import { RegisterUser } from "@/services/userService";
 
 const formSchema = z.object({
   email: z.string().min(1).min(2),
   name: z.string().min(1).min(2),
   surname: z.string().min(1).min(2),
-  role: z.string()
+  role: z.string(),
 });
 
-export default function MyForm() {
-  const roles = [{
-      label: "User",
-      value: "USER"
-    },
-    {
-      label: "Moderator",
-      value: "MODERATOR"
-    },
-    {
-      label: "Admin",
-      value: "ADMIN"
-    }
+export default function RegisterForm({ onSuccess }: { onSuccess?: () => void }) {
+  const roles = [
+    { label: "User", value: "USER" },
+    { label: "Moderator", value: "MODERATOR" },
+    { label: "Admin", value: "ADMIN" },
   ] as const;
-  const form = useForm < z.infer < typeof formSchema >> ({
-    resolver: zodResolver(formSchema),
 
-  })
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+      name: "",
+      surname: "",
+      role: "USER",
+    },
+  });
 
   const [sending, setSending] = useState(false);
 
@@ -87,23 +65,27 @@ export default function MyForm() {
       email: values.email,
       name: values.name,
       surname: values.surname || "",
-      role: values.role || "User"
-    }
+      role: values.role || "USER",
+    };
+
     try {
-      const result = await RegisterUser(payload)
-      toast.success(`User created successfully!`)
-      form.reset()
-      setSending(false);
+      await RegisterUser(payload);
+      toast.success(`User created successfully!`);
+      form.reset();
+      onSuccess?.(); // 👈 close dialog after success
     } catch (error) {
-        setSending(false);
-      toast.error("Failed to create project. Please try again.")
+      toast.error("Failed to create user. Please try again.");
+    } finally {
+      setSending(false);
     }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 max-w-3xl mx-auto py-10">
-        
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 w-full mx-auto"
+      >
         <FormField
           control={form.control}
           name="email"
@@ -111,64 +93,46 @@ export default function MyForm() {
             <FormItem>
               <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input 
-                placeholder="example@lynx.com"
-                
-                type="text"
-                {...field} />
+                <Input placeholder="example@lynx.com" type="text" {...field} />
               </FormControl>
-              
+
               <FormMessage />
             </FormItem>
           )}
         />
-        
         <div className="grid grid-cols-12 gap-4">
-          
           <div className="col-span-6">
-            
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>First Name</FormLabel>
-              <FormControl>
-                <Input 
-                placeholder="John"
-                
-                type="text"
-                {...field} />
-              </FormControl>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>First Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="John" type="text" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          
           <div className="col-span-6">
-            
-        <FormField
-          control={form.control}
-          name="surname"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Last Name</FormLabel>
-              <FormControl>
-                <Input 
-                placeholder="Doe"
-                
-                type="text"
-                {...field} />
-              </FormControl>
-              
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+            <FormField
+              control={form.control}
+              name="surname"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Last Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Doe" type="text" {...field} />
+                  </FormControl>
+
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
           </div>
-          
         </div>
         <FormField
           control={form.control}
@@ -176,28 +140,26 @@ export default function MyForm() {
           render={({ field }) => (
             <FormItem className="flex flex-col">
               <FormLabel>Role</FormLabel>
-              <Popover>
+              <Popover >
                 <PopoverTrigger asChild>
                   <FormControl>
                     <Button
                       variant="outline"
                       role="combobox"
                       className={cn(
-                        "w-[200px] justify-between",
-                        !field.value && "text-muted-foreground"
+                        "w-full justify-between",
+                        !field.value && "text-muted-foreground",
                       )}
-                      
                     >
                       {field.value
-                        ? roles.find(
-                            (role) => role.value === field.value
-                          )?.label
+                        ? roles.find((role) => role.value === field.value)
+                            ?.label
                         : "Select role"}
                       <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                     </Button>
                   </FormControl>
                 </PopoverTrigger>
-                <PopoverContent className="w-[200px] p-0">
+                <PopoverContent className="w-full p-0">
                   <Command>
                     <CommandInput placeholder="Search role..." />
                     <CommandList>
@@ -216,7 +178,7 @@ export default function MyForm() {
                                 "mr-2 h-4 w-4",
                                 role.value === field.value
                                   ? "opacity-100"
-                                  : "opacity-0"
+                                  : "opacity-0",
                               )}
                             />
                             {role.label}
@@ -227,13 +189,12 @@ export default function MyForm() {
                   </Command>
                 </PopoverContent>
               </Popover>
-              
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <Button type="submit" className="mt-4 w-full">Submit</Button>
       </form>
     </Form>
-  )
+  );
 }
