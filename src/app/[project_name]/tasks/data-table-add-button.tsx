@@ -1,3 +1,4 @@
+// src/app/[project_name]/tasks/data-table-add-button.tsx
 "use client"
 
 import { useState } from "react"
@@ -65,6 +66,7 @@ const formSchema = z.object({
   type: z.string().min(1, "Required"),
   status: z.string().min(1, "Required"),
   priority: z.string().min(1, "Required"),
+  actualpoints: z.coerce.number().optional(),
   estimatepoint: z.coerce.number().optional(),
   startdate: z.coerce.date().optional(),
   duedate: z.coerce.date().optional(),
@@ -191,6 +193,7 @@ export default function AddTaskDialog() {
       type: values.type,
       status: values.status,
       priority: values.priority,
+      actualPoints : values.actualpoints || 0,
       estimatePoints: values.estimatepoint || 0,
       startDate: values.startdate ? values.startdate.toISOString() : undefined,
       endDate: values.duedate ? values.duedate.toISOString() : undefined,

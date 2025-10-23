@@ -14,6 +14,7 @@ export type CreateTaskPayload = {
   type: string
   status: string
   priority: string
+  actualPoints?:number 
   estimatePoints?: number
   startDate?: string
   endDate?: string
