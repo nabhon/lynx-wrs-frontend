@@ -1,22 +1,18 @@
 // src/app/[project_name]/tasks/data-table-add-button.tsx
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useForm, type SubmitHandler, type Resolver } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
-import { toast } from "sonner"
-import { format } from "date-fns"
-import { cn } from "@/lib/utils"
-import {
-  Check,
-  ChevronsUpDown,
-  Calendar as CalendarIcon
-} from "lucide-react"
+import { useState } from "react";
+import { useForm, type SubmitHandler, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Check, ChevronsUpDown, Calendar as CalendarIcon } from "lucide-react";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Form,
   FormField,
@@ -24,12 +20,12 @@ import {
   FormLabel,
   FormControl,
   FormMessage,
-} from "@/components/ui/form"
+} from "@/components/ui/form";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-} from "@/components/ui/popover"
+} from "@/components/ui/popover";
 import {
   Command,
   CommandEmpty,
@@ -37,8 +33,8 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-} from "@/components/ui/command"
-import { Calendar } from "@/components/ui/calendar"
+} from "@/components/ui/command";
+import { Calendar } from "@/components/ui/calendar";
 import {
   Dialog,
   DialogTrigger,
@@ -48,11 +44,11 @@ import {
   DialogDescription,
   DialogFooter,
   DialogClose,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
 
 // mock
-import { createTaskService } from "@/services/taskService"
-import { useProject } from "@/providers/ProjectProvider"
+import { createTaskService } from "@/services/taskService";
+import { useProject } from "@/providers/ProjectProvider";
 
 // =========================
 // Schema
@@ -72,18 +68,18 @@ const formSchema = z.object({
   duedate: z.coerce.date().optional(),
   assignee: z.string().optional(),
   auditor: z.string().optional(),
-})
+});
 
 // =========================
 // Options
 // =========================
 const selectOptions = {
-    type: [
-    { value: "MIPO", label: "MIPO"},
-    { value: "MRPO", label: "MRPO"},
-    { value: "MIT", label: "MIT"},
-    { value: "MRT", label: "MRT"},
-    { value: "TGD", label: "TGD"},
+  type: [
+    { value: "MIPO", label: "MIPO" },
+    { value: "MRPO", label: "MRPO" },
+    { value: "MIT", label: "MIT" },
+    { value: "MRT", label: "MRT" },
+    { value: "TGD", label: "TGD" },
     { value: "RGD", label: "RGD" },
     { value: "MGD", label: "MGD" },
     { value: "TPD", label: "TPD" },
@@ -114,43 +110,43 @@ const selectOptions = {
     { value: "ETC", label: "ETC" },
     { value: "MFT", label: "MFT" },
     { value: "NWA", label: "NWA" },
-    ],
+  ],
   status: [
     {
       value: "TODO",
-      label: "To Do"
+      label: "To Do",
     },
     {
       value: "IN_PROGRESS",
-      label: "In Progress"
+      label: "In Progress",
     },
     {
       value: "DONE",
-      label: "Done"
+      label: "Done",
     },
     {
       value: "CANCELED",
-      label: "Canceled"
+      label: "Canceled",
     },
     {
       value: "ON_HOLD",
-      label: "On Hold"
+      label: "On Hold",
     },
     {
       value: "REVIEW",
-      label: "Review"
+      label: "Review",
     },
     {
       value: "LATE",
-      label: "Late"
+      label: "Late",
     },
     {
       value: "BLOCKED",
-      label: "Blocked"
+      label: "Blocked",
     },
     {
       value: "REVISE",
-      label: "Revise"
+      label: "Revise",
     },
   ],
   priority: [
@@ -163,26 +159,28 @@ const selectOptions = {
     { label: "Bob", value: "2" },
     { label: "Charlie", value: "3" },
   ],
-}
+};
 
 // =========================
 // Component
 // =========================
 export default function AddTaskDialog() {
-  const [sending, setSending] = useState(false)
-  const [open, setOpen] = useState(false)
-  const {refreshProject} = useProject();
+  const [sending, setSending] = useState(false);
+  const [open, setOpen] = useState(false);
+  const { refreshProject } = useProject();
 
-  type FormValues = z.infer<typeof formSchema>
+  type FormValues = z.infer<typeof formSchema>;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues: {},
-  })
+  });
 
   // submit
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (values) => {
-    setSending(true)
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (
+    values
+  ) => {
+    setSending(true);
     const payload = {
       projectId: 1,
       cycleCount: values.cycle ? Number(values.cycle) : 1,
@@ -193,27 +191,27 @@ export default function AddTaskDialog() {
       type: values.type,
       status: values.status,
       priority: values.priority,
-      actualPoints : values.actualpoints || 0,
+      actualPoints: values.actualpoints || 0,
       estimatePoints: values.estimatepoint || 0,
       startDate: values.startdate ? values.startdate.toISOString() : undefined,
       endDate: values.duedate ? values.duedate.toISOString() : undefined,
       assigneeId: values.assignee ? Number(values.assignee) : undefined,
       auditorId: values.auditor ? Number(values.auditor) : undefined,
-    }
+    };
 
     try {
-      const result = await createTaskService(payload)
-      toast.success(`Task "${result.taskName}" created successfully!`)
-      form.reset()
-        await refreshProject();
-      setOpen(false)
+      const result = await createTaskService(payload);
+      toast.success(`Task "${result.taskName}" created successfully!`);
+      form.reset();
+      await refreshProject();
+      setOpen(false);
     } catch (error) {
-      console.error(error)
-      toast.error("Failed to create task.")
+      console.error(error);
+      toast.error("Failed to create task.");
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
   // helper render for popover selects
   const renderSelect = (
@@ -268,7 +266,7 @@ export default function AddTaskDialog() {
       </Popover>
       <FormMessage />
     </FormItem>
-  )
+  );
 
   // =========================
   // JSX
@@ -385,28 +383,34 @@ export default function AddTaskDialog() {
                 <FormField
                   control={form.control as any}
                   name="type"
-                  render={({ field }) => renderSelect(field, "Type", selectOptions.type)}
+                  render={({ field }) =>
+                    renderSelect(field, "Type", selectOptions.type)
+                  }
                 />
               </div>
               <div className="col-span-4">
                 <FormField
                   control={form.control as any}
                   name="status"
-                  render={({ field }) => renderSelect(field, "Status", selectOptions.status)}
+                  render={({ field }) =>
+                    renderSelect(field, "Status", selectOptions.status)
+                  }
                 />
               </div>
               <div className="col-span-4">
                 <FormField
                   control={form.control as any}
                   name="priority"
-                  render={({ field }) => renderSelect(field, "Priority", selectOptions.priority)}
+                  render={({ field }) =>
+                    renderSelect(field, "Priority", selectOptions.priority)
+                  }
                 />
               </div>
             </div>
 
-            {/* estimate points */}
+            {/* estimate */}
             <div className="grid grid-cols-12 gap-4">
-              <div className="col-span-12">
+              <div className="col-span-12 md:col-span-6">
                 <FormField
                   control={form.control as any}
                   name="estimatepoint"
@@ -414,7 +418,37 @@ export default function AddTaskDialog() {
                     <FormItem>
                       <FormLabel>Estimate Point</FormLabel>
                       <FormControl>
-                        <Input type="number" placeholder="1" {...field} />
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          step={1}
+                          placeholder="1"
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+                  {/* actual points */}
+              <div className="col-span-12 md:col-span-6">
+                <FormField
+                  control={form.control as any}
+                  name="actualpoints"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Actual Points</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="number"
+                          inputMode="numeric"
+                          min={0}
+                          step={1}
+                          placeholder="0"
+                          {...field}
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -509,14 +543,18 @@ export default function AddTaskDialog() {
                 <FormField
                   control={form.control as any}
                   name="assignee"
-                  render={({ field }) => renderSelect(field, "Assignee", selectOptions.user)}
+                  render={({ field }) =>
+                    renderSelect(field, "Assignee", selectOptions.user)
+                  }
                 />
               </div>
               <div className="col-span-6">
                 <FormField
                   control={form.control as any}
                   name="auditor"
-                  render={({ field }) => renderSelect(field, "Auditor", selectOptions.user)}
+                  render={({ field }) =>
+                    renderSelect(field, "Auditor", selectOptions.user)
+                  }
                 />
               </div>
             </div>
@@ -535,5 +573,5 @@ export default function AddTaskDialog() {
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }
