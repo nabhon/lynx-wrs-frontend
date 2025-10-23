@@ -184,9 +184,7 @@ export default function EditTaskDialog({
     try {
       const payload: EditTaskPayload = {
         taskId: task.id,
-        projectId: project?.projectId ?? task.projectId, // กันเหนียว
-        // ถ้าอยากส่งเฉพาะ field ที่เปลี่ยน แนะนำทำ diff (ดูบันทึกด้านล่าง)
-        taskKey: values.key,
+        projectId: project?.projectId ?? task.projectId, 
         taskName: values.taskname,
         description: values.description ?? undefined,
         type: values.type,
@@ -198,10 +196,7 @@ export default function EditTaskDialog({
         endDate: toYMD(values.duedate),
         assigneeId: values.assignee ? Number(values.assignee) : undefined,
         auditorId: values.auditor ? Number(values.auditor) : undefined,
-        // กรณีแก้ cycle/sprint เป็น id หรือนับรอบ:
-        // backend รับ cycleId / sprintId (id จริง) หรือใช้ count ตอนสร้าง
-        // ใน edit DTO มี cycleId/sprintId ถ้ามี id จริงให้ set ตรงนี้
-        // ถ้ายังไม่มี id ก็ข้ามไปก่อน
+    
       }
 
       await editTaskService(payload)
@@ -278,21 +273,26 @@ export default function EditTaskDialog({
                   )}
                 />
               </div>
-              <div className="col-span-6">
-                <FormField
-                  control={form.control as any}
-                  name="key"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Task Key</FormLabel>
-                      <FormControl>
-                        <Input {...field} placeholder="LYNX-123" />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                          <div className="col-span-6">
+              <FormField
+                control={form.control}
+                name="key"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Task Key</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        value={field.value ?? ""}
+                        disabled
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
             </div>
 
             {/* description */}
