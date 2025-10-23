@@ -11,6 +11,7 @@ import {
   getProjectListService,
   getAllProjectListService,
 } from "@/services/projectService";
+import { useSession } from "./SessionProvider";
 
 // =======================
 // Types
@@ -43,29 +44,33 @@ export function ProjectListProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const { user } = useSession();
   const [projects, setProjects] = useState<ProjectItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const loadProjects = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      try {
-        const data = await getAllProjectListService();
-        if (data?.items) setProjects(data.items);
-        else throw new Error("Invalid API response");
-      } catch (err : any) {
-        const data = await getProjectListService();
-        if (data?.items) setProjects(data.items);
-        else throw new Error("Invalid API response");
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to load projects");
-    } finally {
-      setLoading(false);
+  setLoading(true);
+  setError(null);
+
+  try {
+    let data;
+    if (user?.role === "ADMIN") {
+      data = await getAllProjectListService();
+    } else {
+      data = await getProjectListService();
     }
-  }, []);
+    if (data?.items) {
+      setProjects(data.items);
+    } else {
+      throw new Error("Invalid API response");
+    }
+  } catch (err: any) {
+    setError(err.message || "Failed to load projects");
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
     loadProjects();
