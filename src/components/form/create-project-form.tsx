@@ -1,10 +1,10 @@
-"use client"
+"use client";
 
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { set, z } from "zod"
-import { toast } from "sonner"
-import { Button } from "@/components/ui/button"
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 import {
   Form,
   FormControl,
@@ -13,20 +13,24 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { useState } from "react"
-import { createProjectService } from "@/services/projectService"
-import { useProjectList } from "@/providers/ProjectListProvider"
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { createProjectService } from "@/services/projectService";
+import { useProjectList } from "@/providers/ProjectListProvider";
 
 const formSchema = z.object({
   projectnameinput: z.string().min(1, "Required").max(100),
   projectkeyinput: z.string().min(1, "Required").max(20),
   projectdescription: z.string().max(500).optional(),
-})
+});
 
-export default function CreateProjectForm() {
+type CreateProjectFormProps = {
+  onSuccess?: () => void;
+};
+
+export default function CreateProjectForm({ onSuccess }: CreateProjectFormProps) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -34,7 +38,7 @@ export default function CreateProjectForm() {
       projectkeyinput: "",
       projectdescription: "",
     },
-  })
+  });
 
   const [sending, setSending] = useState(false);
   const { refreshProjects } = useProjectList();
@@ -45,19 +49,20 @@ export default function CreateProjectForm() {
       projectName: values.projectnameinput,
       projectKey: values.projectkeyinput,
       projectDescription: values.projectdescription || "",
-    }
+    };
+
     try {
-      const result = await createProjectService(payload)
-      toast.success(`Project "${result.projectName}" created successfully!`)
-      form.reset()
-      setSending(false);
+      const result = await createProjectService(payload);
+      toast.success(`Project "${result.projectName}" created successfully!`);
       await refreshProjects();
+      form.reset();
+      setSending(false);
+      onSuccess?.(); // close dialog if provided
     } catch (error) {
-        setSending(false);
-      toast.error("Failed to create project. Please try again.")
+      setSending(false);
+      toast.error("Failed to create project. Please try again.");
     }
   }
-
 
   return (
     <Form {...form}>
@@ -102,16 +107,22 @@ export default function CreateProjectForm() {
             <FormItem>
               <FormLabel>Project Description</FormLabel>
               <FormControl>
-                <Textarea placeholder="Placeholder" className="resize-none" {...field} />
+                <Textarea
+                  placeholder="Describe your project..."
+                  className="resize-none"
+                  {...field}
+                />
               </FormControl>
-              <FormDescription>Enter your project description</FormDescription>
+              <FormDescription>Optional description</FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
 
-        <Button className="w-full" type="submit" disabled={sending}>Submit</Button>
+        <Button className="w-full" type="submit" disabled={sending}>
+          {sending ? "Creating..." : "Submit"}
+        </Button>
       </form>
     </Form>
-  )
+  );
 }

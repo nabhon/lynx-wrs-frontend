@@ -1,7 +1,7 @@
 "use client"
 import { useRouter } from "next/navigation"
 import { type LucideIcon } from "lucide-react"
-import { CirclePlus } from "lucide-react"
+import { Presentation, User } from "lucide-react"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -39,13 +39,23 @@ export function NavMain({
           </SidebarMenuItem>
         ))}
         { (user?.role === "MODERATOR" || user?.role === "ADMIN") &&
-          <SidebarMenuItem key="Create Project">
-            <SidebarMenuButton onClick={() => handleNavigate("create_project")}>
-              <CirclePlus />
-              <span>Create Project</span>
+          <div>
+            <SidebarMenuItem key="Manage Projects">
+            <SidebarMenuButton onClick={() => handleNavigate("moderation/projects")}>
+              <Presentation />
+              <span>Manage Projects</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
+            <SidebarMenuItem key="Manage Users">
+            <SidebarMenuButton onClick={() => handleNavigate("moderation/users")}>
+              <User />
+              <span>Manage Users</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          </div>
         }
+
+        
       </SidebarMenu>
     </SidebarGroup>
   )
