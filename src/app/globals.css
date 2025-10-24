@@ -53,16 +53,16 @@
 --background: #fdfdfd;
   --foreground: #000000;
   --card: #fdfdfd;
-  --card-foreground: #ffffff;
+  --card-foreground: #000000;
   --popover: #fcfcfc;
   /* สีตัวอักษร popup */
   --popover-foreground: #000000;
   --primary: #b294fa;
   --primary-foreground: #ffffff;
   --secondary: #edf0f4;
-  --secondary-foreground: #d0b9ff;
+  --secondary-foreground: #c48aff;
     /* สี hover card Task */
-  --muted: #d0b9ff;
+  --muted: #b294fa;
   --muted-foreground: #000000;
   /* สีครอบ Hover หัวตาราง*/
   --accent: #b294fa;
@@ -136,7 +136,7 @@
   --chart-5: #a0a0a0;
   --sidebar: #161618;
   --sidebar-foreground: #f0f0f0;
-  --sidebar-primary: #8c5cff;
+  --sidebar-primary: #b294fa;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #2a2c33;
   --sidebar-accent-foreground: #8c5cff;
