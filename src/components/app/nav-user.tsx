@@ -32,13 +32,26 @@ import {
 
 export function NavUser({
   user,
-}: {
+  onLogout,
+}: 
+{
   user: {
     name?: string
     email?: string
   }
+  onLogout?: () => void
 }) {
   const { isMobile } = useSidebar()
+  const handleLogout = () => {
+    // Add your logout logic here
+    // For example:
+    // - Clear auth tokens from localStorage/cookies
+    // - Call your auth provider's logout function
+    // - Redirect to login page
+    if (onLogout) {
+      onLogout()
+    }
+  }
 
   return (
     <SidebarMenu>
@@ -71,7 +84,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleLogout}>
               <LogOut />
               Log out
             </DropdownMenuItem>
