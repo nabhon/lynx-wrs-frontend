@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/sidebar"
 
 import type { ProjectItem } from "@/providers/ProjectListProvider"
+import { title } from "process"
 
 function slugify(title: string) {
   return title.replace(/\s+/g, "_")
@@ -62,10 +63,10 @@ export function NavProjects({ projects }: { projects: ProjectItem[] }) {
                       </SidebarMenuSubItem>
                     ))}
 
-                    <SidebarMenuSubItem key="Settings">
+                    <SidebarMenuSubItem key="Users">
                       <SidebarMenuSubButton asChild>
-                        <a href={`/${slug}/settings`}>
-                          <span>Settings</span>
+                        <a href={`/${slug}/users`}>
+                          <span>Users</span>
                         </a>
                       </SidebarMenuSubButton>
                     </SidebarMenuSubItem>

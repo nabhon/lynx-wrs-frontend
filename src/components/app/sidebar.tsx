@@ -6,7 +6,7 @@ import {
   PieChart,
   SquareTerminal,
 } from "lucide-react"
-
+import { getUsersDetailsService } from "@/services/userService"
 import { NavMain } from "./nav-main"
 import { NavUser } from "./nav-user"
 import { NavProjects } from "./nav-project"
@@ -18,6 +18,7 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { useProjectList } from "@/providers/ProjectListProvider"
+import { useSession } from "@/providers/SessionProvider"
 
 // This is sample data.
 const menu = {
@@ -31,6 +32,9 @@ const menu = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { projects }  = useProjectList();
+  const { user } = useSession();
+  console.log("Sidebar User:", user);
+
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader>
@@ -40,7 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
-        {/* <NavUser user={data.user} /> */}
+       <NavUser user={{ email: user?.email, name: user?.name }} />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>

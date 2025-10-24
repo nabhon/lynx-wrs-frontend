@@ -70,6 +70,26 @@ export async function getUsersService(): Promise<GetUsersResponse> {
   return response.json();
 }
 
+export async function getUsersDetailsService(): Promise<GetUsersResponse> {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const response = await fetch(`${API_URL}/users/details`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store", // always fetch fresh data
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch users");
+  }
+
+  return response.json();
+}
+
 export async function deleteUserService(id: number) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -88,5 +108,7 @@ export async function deleteUserService(id: number) {
   }
   return response.json();
 }
+
+
 
 
