@@ -18,6 +18,8 @@ import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
+  email: string;
+  name: string;
   role: string;
 };
 
@@ -79,7 +81,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const login = useCallback(async (email: string, password: string) => {
     try {
       const data = await loginService({ email, password }); // authService sets cookies
-      const newUser: User = { id: data.userId, role: data.userRole };
+      const newUser: User = { id: data.userId, role: data.userRole, email: data.userEmail, name: data.userDisplayName };
       setUser(newUser);
       localStorage.setItem("session_user", JSON.stringify(newUser));
       return true;
@@ -109,10 +111,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   // =======================
   const refresh = useCallback(async () => {
     try {
-      const data = await refreshService(); // refresh token handled by server
-      const refreshedUser: User = { id: data.userId, role: data.role };
-      setUser(refreshedUser);
-      localStorage.setItem("session_user", JSON.stringify(refreshedUser));
+      const data = await refreshService(); 
     } catch (err) {
       console.error("Token refresh failed:", err);
       await logout();
