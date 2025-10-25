@@ -22,7 +22,7 @@ function TaskTable({ data }: { data: MyTaskDto[] }) {
             <tr>
               <th className="px-4 py-2 text-left w-[120px]">Project</th>
               <th className="px-4 py-2 text-left w-[80px]">Key</th>
-              <th className="px-4 py-2 text-left w-[260px]">Name</th>
+              <th className="px-4 py-2 text-left w-[260px]">Title</th>
               <th className="px-4 py-2 text-left w-[120px]">Status</th>
               <th className="px-4 py-2 text-left w-[160px]">Assignee</th>
               <th className="px-4 py-2 text-left w-[160px]">Auditor</th>
