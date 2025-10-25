@@ -3,6 +3,8 @@ import DueTable from "./due-table";
 import { useProject } from "@/providers/ProjectProvider"
 import TaskOverviewCards from "@/components/task-overview";
 import TaskPieChart from "./task-pie-chart";
+import BurndownChart from "./burndown";
+import VelocityChart from "./velocity";
 
 export default function Page() {
     const { project, loading, error } = useProject();
@@ -24,6 +26,18 @@ export default function Page() {
                 <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
                     <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
                     <TaskPieChart />
+                </div>
+            </div>
+            <div className="flex flex-row col-span-6 gap-4 ">
+                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
+                    <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
+                    <BurndownChart />
+                </div>
+            </div>
+            <div className="flex flex-row col-span-6 gap-4 ">
+                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
+                    <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
+                    <VelocityChart />
                 </div>
             </div>
           </div>
