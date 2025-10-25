@@ -70,6 +70,18 @@ export type MyTaskDto = {
 
 type ApiList<T> = { message: string; items: T[] }
 
+type ApiItem<T> = { message: string; item: T }
+
+export async function getTaskByIdService(taskId: number): Promise<ApiItem<MyTaskDto>> {
+  const accessToken = (await cookies()).get("accessToken")?.value
+  const res = await fetch(`${API_URL}/tasks/${taskId}`, {
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    cache: "no-store",
+  })
+  if (!res.ok) throw new Error(`Failed to fetch task (${res.status})`)
+  return res.json()
+}
+
 export async function getMyWorkingTasksService(): Promise<ApiList<MyTaskDto>> {
   const accessToken = (await cookies()).get("accessToken")?.value
   const res = await fetch(`${API_URL}/tasks/my-working`, {
@@ -147,3 +159,4 @@ export async function editTaskService(payload: EditTaskPayload) {
 
   return await response.json()
 }
+

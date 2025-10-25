@@ -1,30 +1,44 @@
-"use client";
+// src/components/tasks/FlatTaskTable.tsx
+"use client"
 
-import * as React from "react";
-import type { MyTaskDto } from "@/services/taskService";
+import { useRouter } from "next/navigation"
+import type { MyTaskDto } from "@/services/taskService"
+import { cn } from "@/lib/utils"
 
 export default function FlatTaskTable({ items }: { items: MyTaskDto[] }) {
+  const router = useRouter()
+
   if (!items?.length) {
-    return <p className="text-sm text-muted-foreground">No tasks at the moment</p>;
+    return <p className="text-sm text-muted-foreground">No tasks at the moment</p>
+  }
+
+  const handleRowClick = (taskId: number) => {
+    router.push(`/tasks/${taskId}`)
   }
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-max text-sm table-fixed">
+      <table className="w-full text-sm">
         <thead className="border-b bg-muted/30">
           <tr>
             <th className="px-4 py-2 text-left w-[120px]">Project</th>
-            <th className="px-4 py-2 text-left w-[90px]">Key</th>
+            <th className="px-4 py-2 text-left w-[80px]">Key</th>
             <th className="px-4 py-2 text-left w-[260px]">Name</th>
             <th className="px-4 py-2 text-left w-[120px]">Status</th>
-            <th className="px-4 py-2 text-left w-[180px]">Assignee</th>
-            <th className="px-4 py-2 text-left w-[180px]">Auditor</th>
-            <th className="px-4 py-2 text-left w-[130px]">Due Date</th>
+            <th className="px-4 py-2 text-left w-[160px]">Assignee</th>
+            <th className="px-4 py-2 text-left w-[160px]">Auditor</th>
+            <th className="px-4 py-2 text-left w-[120px]">Due Date</th>
           </tr>
         </thead>
         <tbody>
           {items.map((t) => (
-            <tr key={t.id} className="border-b hover:bg-muted/20">
+            <tr
+              key={t.id}
+              onClick={() => handleRowClick(t.id)}
+              className={cn(
+                "border-b cursor-pointer transition-colors hover:bg-muted/30 active:bg-muted/50"
+              )}
+            >
               <td className="px-4 py-2">{t.projectKey}</td>
               <td className="px-4 py-2">{t.key}</td>
               <td className="px-4 py-2">{t.title}</td>
@@ -37,5 +51,5 @@ export default function FlatTaskTable({ items }: { items: MyTaskDto[] }) {
         </tbody>
       </table>
     </div>
-  );
+  )
 }
