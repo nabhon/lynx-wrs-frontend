@@ -109,6 +109,25 @@ export async function deleteUserService(id: number) {
   return response.json();
 }
 
+export async function getProjectCandidatesService(projectId: number) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const res = await fetch(`${API_URL}/projects/candidates?projectId=${projectId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch project candidates (${res.status})`);
+  }
+
+  return res.json();
+}
 
 
 
