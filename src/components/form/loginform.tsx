@@ -2,6 +2,7 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+
 import {
   Field,
   FieldError,
@@ -38,21 +39,27 @@ export function LoginForm({
   };
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* 🔮 Floating orbs behind everything */}
-      <div className="absolute bsolute inset-0 -z-0 pointer-events-none ">
+    <div className="min-h-screen flex items-center justify-center ">
+
+      {/* orb*/}
+
+      {/* <div className="absolute inset-0 -z-10 pointer-events-none"> */}
+
+      <div className="orb-layer">
         <div className="gradient-orb"></div>
-        <div className="gradient-orb orb-2"></div>
+        <div className="gradient-orb2"></div>
       </div>
+      {/* </div> */}
 
       {/* 🧱 Card container */}
-      <div className="w-full z-0 max-w-[720px] rounded-lg shadow-xl">
-        <Card className="w-full overflow-hidden font-popins border-none">
-          <div className="absolute top-[20px] right-[36px] w-16 h-16 rounded-full overflow-hidden shadow-lg bg-white">
-            <img src="/logo.png" alt="Logo" className="object-cover w-full h-full" />
-          </div>
+      <div className="w-full  max-w-[560px] rounded-2xl">
+        <Card className="card-container  md:flex relative z-10  w-full font-popins border border-white/20 bg-white/5 backdrop-blur-xl shadow-2xl">
 
-          <form className="md:p-8 ">
+          {/* โลโก้ลอย มุมขวาบน */}
+          <div className="absolute top-5 right-9 w-16 h-16 rounded-full  shadow-lg bg-white/80 backdrop-blur">
+            <img src="/logo.png" alt="Logo" className="object-cover w-full h-full rounded-full " />
+          </div>
+          <form className="p-6 md:p-8">
             <FieldGroup>
               {/* Text first */}
               <div className="flex flex-col items-center text-center">
@@ -100,44 +107,50 @@ export function LoginForm({
         </Card>
       </div>
       <style jsx>{`
-  .gradient-orb {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 50vmin;
-    height: 50vmin;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    background: radial-gradient(circle at 40% 40%, #c48aff 0%, #b294fa 45%, transparent 75%);
-    filter: blur(180px);
-    opacity: 0.75;
-    animation: bounceOrb 10s ease-in-out infinite;
-  }
+      .orb-layer {
+      position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden; 
+}
+     .gradient-orb {
+      position: absolute; 
+      top: 10%; 
+      left: 25%; 
+      width: 35vmin; 
+      height: 35vmin; 
+      border-radius: 50%; 
+      transform: translate(-50%, -50%);
+       background: radial-gradient(circle at 30% 30%, #c48aff 0%, #b294fa 45%, transparent 75%); 
+       filter: blur(120px); opacity: 0.75; animation: bounceOrb 15s ease-in-out infinite; 
+        animation: bounceOrb 15s ease-in-out infinite;
+       }
 
-  .gradient-orb.orb-2 {
-    width: 40vmin;
-    height: 40vmin;
-    opacity: 0.5;
-    filter: blur(160px);
-    animation: bounceOrb2 12s ease-in-out infinite;
-  }
+       .gradient-orb-2 { 
+       top: 80%; 
+       left: 70%; 
+        width: 35vmin;
+         height: 35vmin; o
+         pacity: 0.5; 
+         filter: blur(100px); 
+         animation: bounceOrb2 15s ease-in-out infinite; 
+      } 
+         @keyframes bounceOrb{ 
+          0% { transform: translate(-50%, -50%) scale(1); } 
+          25% { transform: translate(calc(-50% - 25vw), calc(-50% - 10vh)) scale(0.9); }
+           50% { transform: translate(calc(-50% + 25vw), calc(-50% + 10vh)) scale(0.9); }
+            75% { transform: translate(calc(-50% - 25vw), calc(-50% + 5vh)) scale(0.9); } 
+            100% { transform: translate(-50%, -50%) scale(1); } 
+            }
+             @keyframes bounceOrb2{ 
+             0% { transform: translate(-50%, -50%) scale(0.9); } 
+             30% { transform: translate(calc(-50% + 20vw), calc(-50% - 15vh)) scale(0.9); } 
+             60% { transform: translate(calc(-50% - 25vw), calc(-50% + 15vh)) scale(0.9); } 
+             100% { transform: translate(-50%, -50%) scale(1); } } }
+    `}
 
-  @keyframes bounceOrb {
-    0%   { transform: translate(-50%, -50%) scale(1); }
-    25%  { transform: translate(calc(-50% - 25vw), calc(-50% - 10vh)) scale(1.1); }
-    50%  { transform: translate(calc(-50% + 25vw), calc(-50% + 10vh)) scale(1.1); }
-    75%  { transform: translate(calc(-50% - 25vw), calc(-50% + 5vh)) scale(1.05); }
-    100% { transform: translate(-50%, -50%) scale(1); }
-  }
-
-  @keyframes bounceOrb2 {
-    0%   { transform: translate(-50%, -50%) scale(1); }
-    30%  { transform: translate(calc(-50% + 20vw), calc(-50% - 15vh)) scale(1.1); }
-    60%  { transform: translate(calc(-50% - 25vw), calc(-50% + 15vh)) scale(1.1); }
-    100% { transform: translate(-50%, -50%) scale(1); }
-  }
-`}</style>
-
+      </style>
     </div>
   );
 }
