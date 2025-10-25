@@ -107,48 +107,49 @@ export function LoginForm({
         </Card>
       </div>
       <style jsx>{`
-      .orb-layer {
-      position: fixed;
+     .orb-layer {
+  position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  overflow: hidden; 
+  overflow: hidden;
 }
-     .gradient-orb {
-      position: absolute; 
-      top: 10%; 
-      left: 25%; 
-      width: 35vmin; 
-      height: 35vmin; 
-      border-radius: 50%; 
-      transform: translate(-50%, -50%);
-       background: radial-gradient(circle at 30% 30%, #c48aff 0%, #b294fa 45%, transparent 75%); 
-       filter: blur(120px); opacity: 0.75; animation: bounceOrb 15s ease-in-out infinite; 
-        animation: bounceOrb 15s ease-in-out infinite;
-       }
 
-       .gradient-orb-2 { 
-       top: 80%; 
-       left: 70%; 
-        width: 35vmin;
-         height: 35vmin; o
-         pacity: 0.5; 
-         filter: blur(100px); 
-         animation: bounceOrb2 15s ease-in-out infinite; 
-      } 
-         @keyframes bounceOrb{ 
-          0% { transform: translate(-50%, -50%) scale(1); } 
-          25% { transform: translate(calc(-50% - 25vw), calc(-50% - 10vh)) scale(0.9); }
-           50% { transform: translate(calc(-50% + 25vw), calc(-50% + 10vh)) scale(0.9); }
-            75% { transform: translate(calc(-50% - 25vw), calc(-50% + 5vh)) scale(0.9); } 
-            100% { transform: translate(-50%, -50%) scale(1); } 
-            }
-             @keyframes bounceOrb2{ 
-             0% { transform: translate(-50%, -50%) scale(0.9); } 
-             30% { transform: translate(calc(-50% + 20vw), calc(-50% - 15vh)) scale(0.9); } 
-             60% { transform: translate(calc(-50% - 25vw), calc(-50% + 15vh)) scale(0.9); } 
-             100% { transform: translate(-50%, -50%) scale(1); } } }
-    `}
+.gradient-orb,
+.gradient-orb2 {
+  position: absolute;
+  width: 35vmin;
+  height: 35vmin;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.75;
+  mix-blend-mode: lighten;
+  animation: floatOrb 10s ease-in-out infinite alternate;
+}
+
+.gradient-orb {
+  background: radial-gradient(circle at 30% 30%, #c48aff 0%, #b294fa 45%, transparent 75%);
+  top: 15%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.gradient-orb2 {
+  background: radial-gradient(circle at 70% 70%, #b294fa 0%, #c48aff 45%, transparent 75%);
+  bottom: 10%;
+  right: 10%;
+  opacity: 0.6;
+  animation-delay: 0s;
+}
+
+@keyframes floatOrb {
+  0%   { transform: translate(0, 0) scale(1); }
+  25%  { transform: translate(8vw, -5vh) scale(1.05); }
+  50%  { transform: translate(-3vw, 8vh) scale(0.95); }
+  75%  { transform: translate(6vw, 4vh) scale(1.1); }
+  100% { transform: translate(0, 0) scale(1); }
+}`
+}
 
       </style>
     </div>
