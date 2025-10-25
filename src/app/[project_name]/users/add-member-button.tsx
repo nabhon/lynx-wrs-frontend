@@ -14,7 +14,7 @@ import {
 import { Check, ChevronsUpDown, UserPlus } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
-import { getProjectCandidatesService } from "@/services/projectService";
+import { getProjectCandidatesService } from "@/services/userService";
 import { addProjectMemberService } from "@/services/projectService";
 
 type UserDto = {

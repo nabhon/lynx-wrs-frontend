@@ -1,7 +1,7 @@
 // src/app/[project_name]/tasks/data-table-add-button.tsx
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm, type SubmitHandler, type Resolver } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -49,6 +49,7 @@ import {
 // mock
 import { createTaskService } from "@/services/taskService";
 import { useProject } from "@/providers/ProjectProvider";
+import { useProjectUsers } from "@/providers/projectUserProvider";
 
 // =========================
 // Schema
@@ -154,11 +155,6 @@ const selectOptions = {
     { label: "Medium", value: "MEDIUM" },
     { label: "High", value: "HIGH" },
   ],
-  user: [
-    { label: "Alice", value: "1" },
-    { label: "Bob", value: "2" },
-    { label: "Charlie", value: "3" },
-  ],
 };
 
 // =========================
@@ -167,9 +163,15 @@ const selectOptions = {
 export default function AddTaskDialog() {
   const [sending, setSending] = useState(false);
   const [open, setOpen] = useState(false);
-  const { refreshProject } = useProject();
+  const { refreshProject, project } = useProject();
+  const { members, loading: membersLoading } = useProjectUsers();
 
   type FormValues = z.infer<typeof formSchema>;
+
+  const userOptions = useMemo(
+    () => (members ?? []).map((u) => ({ label: u.name, value: String(u.id) })),
+    [members]
+  );
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
@@ -181,8 +183,12 @@ export default function AddTaskDialog() {
     values
   ) => {
     setSending(true);
+    if (!project?.projectId) {
+      toast.error("Project not found");
+      return;
+    }
     const payload = {
-      projectId: 1,
+      projectId: project.projectId,
       cycleCount: values.cycle ? Number(values.cycle) : 1,
       sprintCount: values.sprint ? Number(values.sprint) : 1,
       taskKey: values.key,
@@ -432,7 +438,7 @@ export default function AddTaskDialog() {
                   )}
                 />
               </div>
-                  {/* actual points */}
+              {/* actual points */}
               <div className="col-span-12 md:col-span-6">
                 <FormField
                   control={form.control as any}
@@ -544,7 +550,7 @@ export default function AddTaskDialog() {
                   control={form.control as any}
                   name="assignee"
                   render={({ field }) =>
-                    renderSelect(field, "Assignee", selectOptions.user)
+                    renderSelect(field, "Assignee", userOptions)
                   }
                 />
               </div>
@@ -553,7 +559,7 @@ export default function AddTaskDialog() {
                   control={form.control as any}
                   name="auditor"
                   render={({ field }) =>
-                    renderSelect(field, "Auditor", selectOptions.user)
+                    renderSelect(field, "Auditor", userOptions)
                   }
                 />
               </div>

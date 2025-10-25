@@ -81,6 +81,64 @@ export async function getProjectDataService(projectName: string) {
   return res.json();
 }
 
+export async function getUsersInProjectService(projectId: number) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const res = await fetch(`${API_URL}/projects/members?projectId=${projectId}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    cache: "no-store",
+  });
+
+  if (!res.ok) {
+    throw new Error(`Failed to fetch users in project (${res.status})`);
+  }
+
+  return res.json();
+}
+
+export async function addProjectMemberService(projectId: number, userId: number) {
+    const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+  const res = await fetch(`${API_URL}/projects/members/add?projectId=${projectId}&userId=${userId}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+  if (!res.ok) {
+    throw new Error(`Failed to add project member (${res.status})`);
+  }
+  return res.json();
+}
+
+export async function removeProjectMemberService(projectId: number, userId: number) {
+  const cookieStore = await cookies();
+  const accessToken = cookieStore.get("accessToken")?.value;
+
+  const res = await fetch(
+    `${API_URL}/projects/members/remove?projectId=${projectId}&userId=${userId}`,
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`Failed to remove project member (${res.status})`);
+  }
+
+  return res.json();
+}
+
 export async function deleteProject(id: number) {
   const cookieStore = await cookies();
   const accessToken = cookieStore.get("accessToken")?.value;
@@ -98,3 +156,5 @@ export async function deleteProject(id: number) {
 
   return res.json();
 }
+
+
