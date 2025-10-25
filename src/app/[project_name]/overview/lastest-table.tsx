@@ -92,7 +92,7 @@ const TaskTable = () => {
   // 🧱 Render table
   //
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       <h2 className="text-lg font-semibold">Newest Tasks</h2>
       <table className="w-full border-collapse text-sm">
         <thead className="border-b bg-muted/30">
