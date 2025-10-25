@@ -31,8 +31,8 @@ const menu = {
 
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { projects }  = useProjectList();
-  const { user } = useSession();
+  const { projects } = useProjectList();
+  const { user, logout } = useSession();
   console.log("Sidebar User:", user);
 
   return (
@@ -44,7 +44,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavProjects projects={projects} />
       </SidebarContent>
       <SidebarFooter>
-       <NavUser user={{ email: user?.email, name: user?.name }} />
+        <NavUser
+          user={{ email: user?.email, name: user?.name }}
+          onLogout={logout}
+        />
       </SidebarFooter>
       <SidebarRail />
     </Sidebar>
