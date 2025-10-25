@@ -129,5 +129,29 @@ export async function getProjectCandidatesService(projectId: number) {
   return res.json();
 }
 
+export async function changePasswordService(payload: {
+  currentPassword: string
+  newPassword: string
+}) {
+  const accessToken = (await cookies()).get("accessToken")?.value
+
+  const res = await fetch(`${API_URL}/auth/change-password`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(payload),
+    cache: "no-store",
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Change password failed (${res.status}) - ${err}`)
+  }
+
+  return res.json() // { message: "success" }
+}
+
 
 
