@@ -1,3 +1,4 @@
+// src/services/taskService.ts
 "use server"
 
 import { cookies } from "next/headers"
@@ -40,6 +41,64 @@ export type EditTaskPayload = {
   assigneeId?: number
   auditorId?: number
 }
+
+export type MyTaskDto = {
+  id: number
+  projectId: number
+  projectKey: string
+  key: string
+  title: string
+  description?: string | null
+  type: string
+  status: string
+  priorities: string
+  estimatePoints?: number | null
+  actualPoints?: number | null
+  startDate?: string | null
+  dueDate?: string | null
+  finishedAt?: string | null
+  assignedToId?: number | null
+  assignedToName?: string | null
+  auditedById?: number | null
+  auditedByName?: string | null
+  createdById?: number | null
+  createdByName?: string | null
+  updatedById?: number | null
+  createdAt: string
+  updatedAt: string
+}
+
+type ApiList<T> = { message: string; items: T[] }
+
+export async function getMyWorkingTasksService(): Promise<ApiList<MyTaskDto>> {
+  const accessToken = (await cookies()).get("accessToken")?.value
+  const res = await fetch(`${API_URL}/tasks/my-working`, {
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    cache: "no-store",
+  })
+  if (!res.ok) throw new Error(`Failed to fetch my working tasks (${res.status})`)
+  return res.json()
+}
+
+export async function getMyPendingReviewTasksService(): Promise<ApiList<MyTaskDto>> {
+  const accessToken = (await cookies()).get("accessToken")?.value
+  const res = await fetch(`${API_URL}/tasks/pending-review`, {
+    headers: { "Content-Type": "application/json", Authorization: `Bearer ${accessToken}` },
+    cache: "no-store",
+  })
+  if (!res.ok) throw new Error(`Failed to fetch my pending reviews (${res.status})`)
+  return res.json()
+}
+
+// ตัวห่อให้หน้า /tasks ใช้ชื่อเดิมต่อได้
+export async function getMyWorkService(): Promise<{ active: MyTaskDto[]; review: MyTaskDto[] }> {
+  const [active, review] = await Promise.all([
+    getMyWorkingTasksService(),
+    getMyPendingReviewTasksService(),
+  ])
+  return { active: active.items ?? [], review: review.items ?? [] }
+}
+
 
 export async function createTaskService(payload: CreateTaskPayload) {
   const cookieStore = await cookies()
