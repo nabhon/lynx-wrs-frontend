@@ -1,3 +1,4 @@
+// src/components/app/nav-main.tsx
 "use client"
 import { useRouter } from "next/navigation"
 import { type LucideIcon } from "lucide-react"
@@ -55,7 +56,6 @@ export function NavMain({
           </div>
         }
 
-        
       </SidebarMenu>
     </SidebarGroup>
   )
