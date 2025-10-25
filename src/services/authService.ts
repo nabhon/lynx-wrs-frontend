@@ -10,6 +10,8 @@ export type LoginRequest = {
 export type LoginResponse = {
   userId: string;
   userRole: string;
+  userEmail: string;
+  userDisplayName: string;
   accessToken: string;
   refreshToken: string;
 };
@@ -67,7 +69,7 @@ export async function logoutService(): Promise<void> {
 // =======================
 // Refresh Token
 // =======================
-export async function refreshService(): Promise<{ userId: string; role: string; accessToken: string }> {
+export async function refreshService(): Promise<{ accessToken: string; refreshToken: string }> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
 
@@ -77,10 +79,8 @@ export async function refreshService(): Promise<{ userId: string; role: string; 
 
   const res = await fetch(`${API_URL}/auth/refresh`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${refreshToken}`,
-    },
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ refreshToken }),
     cache: "no-store",
   });
 
