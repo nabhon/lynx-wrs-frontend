@@ -51,9 +51,9 @@ export function LoginForm({
       </div>
       {/* </div> */}
 
-      {/* 🧱 Card container */}
+      {/*Card container */}
       <div className="w-full  max-w-[560px] rounded-2xl">
-        <Card className="card-container  md:flex relative z-10  w-full font-popins border border-white/20 bg-white/5 backdrop-blur-xl shadow-2xl">
+        <Card className="md:flex relative z-10  w-full font-popins border border-white/20 bg-white/5 backdrop-blur-xl shadow-2xl">
 
           {/* โลโก้ลอย มุมขวาบน */}
           <div className="absolute top-5 right-9 w-16 h-16 rounded-full  shadow-lg bg-white/80 backdrop-blur">
