@@ -1,32 +1,52 @@
 // src/app/[project_name]/tasks/data-table-edit-button.tsx
-"use client"
+"use client";
 
-import { useMemo, useState, useEffect } from "react"
-import { z } from "zod"
-import { useForm, type SubmitHandler, type Resolver } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { format, parseISO } from "date-fns"
-import { toast } from "sonner"
-import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { useMemo, useState, useEffect } from "react";
+import { z } from "zod";
+import { useForm, type SubmitHandler, type Resolver } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format, parseISO } from "date-fns";
+import { toast } from "sonner";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-  Form, FormField, FormItem, FormLabel, FormControl, FormMessage,
-} from "@/components/ui/form"
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "@/components/ui/form";
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter,
-} from "@/components/ui/dialog"
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover"
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import {
-  Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList,
-} from "@/components/ui/command"
-import { Calendar } from "@/components/ui/calendar"
-import { Check, ChevronsUpDown, Calendar as CalendarIcon } from "lucide-react"
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command";
+import { Calendar } from "@/components/ui/calendar";
+import { Check, ChevronsUpDown, Calendar as CalendarIcon } from "lucide-react";
 
-import { editTaskService, type EditTaskPayload } from "@/services/taskService"
-import { useProject } from "@/providers/ProjectProvider"
-import type { Task } from "./data/schema"
+import { editTaskService, type EditTaskPayload } from "@/services/taskService";
+import { useProject } from "@/providers/ProjectProvider";
+import type { Task } from "./data/schema";
+import { useProjectUsers } from "@/providers/projectUserProvider";
 
 // ====== schema ของฟอร์มแก้ไข (เหมือน create แต่เป็น optional เกือบทั้งหมด) ======
 const formSchema = z.object({
@@ -44,24 +64,47 @@ const formSchema = z.object({
   duedate: z.date().nullable().optional(),
   assignee: z.string().optional().nullable(), // เก็บเป็น userId (string) แล้วค่อยแปลงเป็น number
   auditor: z.string().optional().nullable(),
-})
+});
 
-type FormValues = z.infer<typeof formSchema>
+type FormValues = z.infer<typeof formSchema>;
 
 const selectOptions = {
   type: [
-    { value: "MIPO", label: "MIPO" }, { value: "MRPO", label: "MRPO" }, { value: "MIT", label: "MIT" },
-    { value: "MRT", label: "MRT" }, { value: "TGD", label: "TGD" }, { value: "RGD", label: "RGD" },
-    { value: "MGD", label: "MGD" }, { value: "TPD", label: "TPD" }, { value: "STD", label: "STD" },
-    { value: "SCD", label: "SCD" }, { value: "RD", label: "RD" }, { value: "US", label: "US" },
-    { value: "RPD", label: "RPD" }, { value: "SWD", label: "SWD" }, { value: "UCD", label: "UCD" },
-    { value: "AD", label: "AD" }, { value: "UCDS", label: "UCDS" }, { value: "SQ", label: "SQ" },
-    { value: "SD", label: "SD" }, { value: "DBD", label: "DBD" }, { value: "ER", label: "ER" },
-    { value: "DD", label: "DD" }, { value: "PN", label: "PN" }, { value: "CHECK", label: "CHECK" },
-    { value: "SRSD", label: "SRSD" }, { value: "VCD", label: "VCD" }, { value: "UXI", label: "UXI" },
-    { value: "SMD", label: "SMD" }, { value: "FMD", label: "FMD" }, { value: "SDW", label: "SDW" },
-    { value: "TRT", label: "TRT" }, { value: "POT", label: "POT" }, { value: "ETC", label: "ETC" },
-    { value: "MFT", label: "MFT" }, { value: "NWA", label: "NWA" },
+    { value: "MIPO", label: "MIPO" },
+    { value: "MRPO", label: "MRPO" },
+    { value: "MIT", label: "MIT" },
+    { value: "MRT", label: "MRT" },
+    { value: "TGD", label: "TGD" },
+    { value: "RGD", label: "RGD" },
+    { value: "MGD", label: "MGD" },
+    { value: "TPD", label: "TPD" },
+    { value: "STD", label: "STD" },
+    { value: "SCD", label: "SCD" },
+    { value: "RD", label: "RD" },
+    { value: "US", label: "US" },
+    { value: "RPD", label: "RPD" },
+    { value: "SWD", label: "SWD" },
+    { value: "UCD", label: "UCD" },
+    { value: "AD", label: "AD" },
+    { value: "UCDS", label: "UCDS" },
+    { value: "SQ", label: "SQ" },
+    { value: "SD", label: "SD" },
+    { value: "DBD", label: "DBD" },
+    { value: "ER", label: "ER" },
+    { value: "DD", label: "DD" },
+    { value: "PN", label: "PN" },
+    { value: "CHECK", label: "CHECK" },
+    { value: "SRSD", label: "SRSD" },
+    { value: "VCD", label: "VCD" },
+    { value: "UXI", label: "UXI" },
+    { value: "SMD", label: "SMD" },
+    { value: "FMD", label: "FMD" },
+    { value: "SDW", label: "SDW" },
+    { value: "TRT", label: "TRT" },
+    { value: "POT", label: "POT" },
+    { value: "ETC", label: "ETC" },
+    { value: "MFT", label: "MFT" },
+    { value: "NWA", label: "NWA" },
   ],
   status: [
     { value: "TODO", label: "To Do" },
@@ -79,22 +122,19 @@ const selectOptions = {
     { label: "Medium", value: "MEDIUM" },
     { label: "High", value: "HIGH" },
   ],
-  // TODO: เปลี่ยนตรงนี้ให้ดึง user จริงจาก API ของคุณ
-  user: [
-    { label: "Alice", value: "1" },
-    { label: "Bob", value: "2" },
-    { label: "Charlie", value: "3" },
-  ],
-}
+};
 
 // helper: ปุ่ม select
 function SelectPopover({
-  field, label, options, placeholder,
+  field,
+  label,
+  options,
+  placeholder,
 }: {
-  field: any
-  label: string
-  options: { label: string; value: string }[]
-  placeholder?: string
+  field: any;
+  label: string;
+  options: { label: string; value: string }[];
+  placeholder?: string;
 }) {
   return (
     <FormItem className="flex flex-col">
@@ -105,9 +145,14 @@ function SelectPopover({
             <Button
               variant="outline"
               role="combobox"
-              className={cn("justify-between", !field.value && "text-muted-foreground")}
+              className={cn(
+                "justify-between",
+                !field.value && "text-muted-foreground"
+              )}
             >
-              {field.value ? options.find((o) => o.value === field.value)?.label : (placeholder ?? `Select ${label}`)}
+              {field.value
+                ? options.find((o) => o.value === field.value)?.label
+                : placeholder ?? `Select ${label}`}
               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
             </Button>
           </FormControl>
@@ -119,8 +164,16 @@ function SelectPopover({
               <CommandEmpty>No {label.toLowerCase()} found.</CommandEmpty>
               <CommandGroup>
                 {options.map((opt) => (
-                  <CommandItem key={opt.value} onSelect={() => field.onChange(opt.value)}>
-                    <Check className={cn("mr-2 h-4 w-4", opt.value === field.value ? "opacity-100" : "opacity-0")} />
+                  <CommandItem
+                    key={opt.value}
+                    onSelect={() => field.onChange(opt.value)}
+                  >
+                    <Check
+                      className={cn(
+                        "mr-2 h-4 w-4",
+                        opt.value === field.value ? "opacity-100" : "opacity-0"
+                      )}
+                    />
                     {opt.label}
                   </CommandItem>
                 ))}
@@ -131,23 +184,31 @@ function SelectPopover({
       </Popover>
       <FormMessage />
     </FormItem>
-  )
+  );
 }
 
 function toYMD(date?: Date | null): string | undefined {
-  if (!date) return undefined
-  return format(date, "yyyy-MM-dd")
+  if (!date) return undefined;
+  return format(date, "yyyy-MM-dd");
 }
 
 export default function EditTaskDialog({
-  open, onOpenChange, task,
+  open,
+  onOpenChange,
+  task,
 }: {
-  open: boolean
-  onOpenChange: (v: boolean) => void
-  task: Task
+  open: boolean;
+  onOpenChange: (v: boolean) => void;
+  task: Task;
 }) {
-  const [sending, setSending] = useState(false)
-  const { refreshProject, project } = useProject()
+  const [sending, setSending] = useState(false);
+  const { refreshProject, project } = useProject();
+  const { members, loading: membersLoading } = useProjectUsers();
+
+  const userOptions = useMemo(
+    () => (members ?? []).map((m) => ({ label: m.name, value: String(m.id) })),
+    [members]
+  );
 
   // เตรียม defaultValues จาก task
   const defaultValues: Partial<FormValues> = useMemo(() => {
@@ -166,25 +227,25 @@ export default function EditTaskDialog({
       duedate: task.dueDate ? parseISO(task.dueDate) : null,
       assignee: task.assignedToId ? String(task.assignedToId) : null,
       auditor: task.auditedById ? String(task.auditedById) : null,
-    }
-  }, [task])
+    };
+  }, [task]);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema) as unknown as Resolver<FormValues>,
     defaultValues,
-  })
+  });
 
   // Reset the form whenever the defaultValues (derived from task) change
   useEffect(() => {
-    form.reset(defaultValues)
-  }, [defaultValues, form.reset])
+    form.reset(defaultValues);
+  }, [defaultValues, form.reset]);
 
   const onSubmit: SubmitHandler<FormValues> = async (values) => {
-    setSending(true)
+    setSending(true);
     try {
       const payload: EditTaskPayload = {
         taskId: task.id,
-        projectId: project?.projectId ?? task.projectId, 
+        projectId: project?.projectId ?? task.projectId,
         taskName: values.taskname,
         description: values.description ?? undefined,
         type: values.type,
@@ -196,32 +257,35 @@ export default function EditTaskDialog({
         endDate: toYMD(values.duedate),
         assigneeId: values.assignee ? Number(values.assignee) : undefined,
         auditorId: values.auditor ? Number(values.auditor) : undefined,
-    
-      }
+      };
 
-      await editTaskService(payload)
-      toast.success("Task updated")
-      await refreshProject()
-      onOpenChange(false)
+      await editTaskService(payload);
+      toast.success("Task updated");
+      await refreshProject();
+      onOpenChange(false);
     } catch (e: any) {
-      console.error(e)
-      toast.error(e?.message ?? "Update failed")
+      console.error(e);
+      toast.error(e?.message ?? "Update failed");
     } finally {
-      setSending(false)
+      setSending(false);
     }
-  }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-4xl">
         <DialogHeader>
           <DialogTitle>Edit Task</DialogTitle>
-          <DialogDescription>Update task details and save changes.</DialogDescription>
+          <DialogDescription>
+            Update task details and save changes.
+          </DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 pt-2">
-
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-4 pt-2"
+          >
             {/* cycle / sprint */}
             <div className="grid grid-cols-12 gap-4">
               <div className="col-span-6">
@@ -273,26 +337,21 @@ export default function EditTaskDialog({
                   )}
                 />
               </div>
-                          <div className="col-span-6">
-              <FormField
-                control={form.control}
-                name="key"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Task Key</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        value={field.value ?? ""}
-                        disabled
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </div>
-
+              <div className="col-span-6">
+                <FormField
+                  control={form.control}
+                  name="key"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Task Key</FormLabel>
+                      <FormControl>
+                        <Input {...field} value={field.value ?? ""} disabled />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
             </div>
 
             {/* description */}
@@ -303,7 +362,11 @@ export default function EditTaskDialog({
                 <FormItem>
                   <FormLabel>Description</FormLabel>
                   <FormControl>
-                    <Textarea className="resize-none" placeholder="Describe this task..." {...field} />
+                    <Textarea
+                      className="resize-none"
+                      placeholder="Describe this task..."
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -317,7 +380,11 @@ export default function EditTaskDialog({
                   control={form.control as any}
                   name="type"
                   render={({ field }) => (
-                    <SelectPopover field={field} label="Type" options={selectOptions.type} />
+                    <SelectPopover
+                      field={field}
+                      label="Type"
+                      options={selectOptions.type}
+                    />
                   )}
                 />
               </div>
@@ -326,7 +393,11 @@ export default function EditTaskDialog({
                   control={form.control as any}
                   name="status"
                   render={({ field }) => (
-                    <SelectPopover field={field} label="Status" options={selectOptions.status} />
+                    <SelectPopover
+                      field={field}
+                      label="Status"
+                      options={selectOptions.status}
+                    />
                   )}
                 />
               </div>
@@ -335,7 +406,11 @@ export default function EditTaskDialog({
                   control={form.control as any}
                   name="priority"
                   render={({ field }) => (
-                    <SelectPopover field={field} label="Priority" options={selectOptions.priority} />
+                    <SelectPopover
+                      field={field}
+                      label="Priority"
+                      options={selectOptions.priority}
+                    />
                   )}
                 />
               </div>
@@ -389,9 +464,14 @@ export default function EditTaskDialog({
                           <FormControl>
                             <Button
                               variant="outline"
-                              className={cn("justify-start text-left", !field.value && "text-muted-foreground")}
+                              className={cn(
+                                "justify-start text-left",
+                                !field.value && "text-muted-foreground"
+                              )}
                             >
-                              {field.value ? format(field.value, "PPP") : "Pick a date"}
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : "Pick a date"}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -422,9 +502,14 @@ export default function EditTaskDialog({
                           <FormControl>
                             <Button
                               variant="outline"
-                              className={cn("justify-start text-left", !field.value && "text-muted-foreground")}
+                              className={cn(
+                                "justify-start text-left",
+                                !field.value && "text-muted-foreground"
+                              )}
                             >
-                              {field.value ? format(field.value, "PPP") : "Pick a date"}
+                              {field.value
+                                ? format(field.value, "PPP")
+                                : "Pick a date"}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -451,7 +536,12 @@ export default function EditTaskDialog({
                   control={form.control as any}
                   name="assignee"
                   render={({ field }) => (
-                    <SelectPopover field={field} label="Assignee" options={selectOptions.user} placeholder="Unassigned" />
+                    <SelectPopover
+                      field={field}
+                      label="Assignee"
+                      options={userOptions}
+                      placeholder={membersLoading ? "Loading..." : "Unassigned"}
+                    />
                   )}
                 />
               </div>
@@ -460,14 +550,24 @@ export default function EditTaskDialog({
                   control={form.control as any}
                   name="auditor"
                   render={({ field }) => (
-                    <SelectPopover field={field} label="Auditor" options={selectOptions.user} placeholder="None" />
+                    <SelectPopover
+                      field={field}
+                      label="Auditor"
+                      options={userOptions}
+                      placeholder={membersLoading ? "Loading..." : "None"}
+                    />
                   )}
                 />
               </div>
             </div>
 
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={sending}>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={sending}
+              >
                 Cancel
               </Button>
               <Button type="submit" disabled={sending}>
@@ -478,5 +578,5 @@ export default function EditTaskDialog({
         </Form>
       </DialogContent>
     </Dialog>
-  )
+  );
 }

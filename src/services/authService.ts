@@ -72,7 +72,6 @@ export async function logoutService(): Promise<void> {
 export async function refreshService(): Promise<{ accessToken: string; refreshToken: string }> {
   const cookieStore = await cookies();
   const refreshToken = cookieStore.get("refreshToken")?.value;
-  console.log(refreshToken)
 
   if (!refreshToken) {
     throw new Error("No refresh token found");
