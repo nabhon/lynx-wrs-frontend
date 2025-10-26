@@ -122,7 +122,6 @@ const DueTable = () => {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Upcoming Deadlines</h2>
       <table className="w-full border-collapse text-sm">
         <thead className="border-b bg-muted/30">
           {table.getHeaderGroups().map((headerGroup) => (
