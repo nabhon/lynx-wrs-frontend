@@ -16,11 +16,11 @@ export function StatCard({
   return (
     <div
       className={cn(
-        "rounded-2xl border border-violet-200/70 bg-white shadow-[0_2px_14px_rgba(124,58,237,0.08)] p-5",
+        "rounded-2xl border flex flex-row gap-4 border-violet-200/70 bg-white shadow-[0_2px_14px_rgba(124,58,237,0.08)] p-5",
         className
       )}
     >
-      <div className="flex items-start justify-between">
+      <div className="flex h-full items-center justify-between">
         <div className="rounded-full bg-violet-50 text-violet-700">{icon}</div>
       </div>
       <div className="mt-2">
