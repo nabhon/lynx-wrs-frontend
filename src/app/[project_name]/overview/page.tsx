@@ -21,29 +21,29 @@ export default function Page() {
       <OverviewHeaderCards tasks={project.items as any} />
 
       {/* แถวกราฟ/ตาราง */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
+        <div className="relative lg:col-span-8 rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
           <span className="absolute left-4 top-4 text-lg font-semibold">Upcoming Deadlines</span>
           <div className="pt-8">
             <DueTable />
           </div>
         </div>
 
-        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+        <div className="relative rounded-2xl lg:col-span-4 border border-violet-200/60 bg-white/90 shadow-sm p-4">
           <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
           <div className="pt-8">
             <TaskPieChart />
           </div>
         </div>
 
-        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+        <div className="relative rounded-2xl lg:col-span-6 border border-violet-200/60 bg-white/90 shadow-sm p-4">
           <span className="absolute left-4 top-4 text-lg font-semibold">Burndown</span>
           <div className="pt-8">
             <BurndownChart />
           </div>
         </div>
 
-        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+        <div className="relative rounded-2xl lg:col-span-6 border border-violet-200/60 bg-white/90 shadow-sm p-4">
           <span className="absolute left-4 top-4 text-lg font-semibold">Velocity</span>
           <div className="pt-8">
             <VelocityChart />
