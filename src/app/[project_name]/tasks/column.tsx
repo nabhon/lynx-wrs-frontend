@@ -87,7 +87,7 @@ export const columns: ColumnDef<Task>[] = [
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Task" />
     ),
-    cell: ({ row }) => <div className="w-[40px]">{row.getValue("key")}</div>,
+    cell: ({ row }) => <div className="w-[60px]">{row.getValue("key")}</div>,
     enableSorting: false,
     enableHiding: false,
   },

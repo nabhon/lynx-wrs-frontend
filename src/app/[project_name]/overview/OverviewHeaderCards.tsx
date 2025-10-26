@@ -37,6 +37,7 @@ export default function OverviewHeaderCards({ tasks }: { tasks: TaskItem[] }) {
     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
       {items.map((it) => (
         <StatCard
+          key={it.title}
           title={it.title}
           value={it.value}
           icon={it.icon}

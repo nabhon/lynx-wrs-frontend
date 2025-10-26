@@ -142,7 +142,7 @@ export default function VelocityChart() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="sprint"
-            label={{ value: "Sprint", position: "bottom", dy: 10 }}
+            label={{ value: "Sprint", position: "bottom", dy: 0 }}
           />
           <YAxis
             label={{ value: "Points", angle: -90, position: "insideLeft" }}
