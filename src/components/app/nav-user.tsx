@@ -1,3 +1,4 @@
+// src/components/app/nav-user.tsx
 "use client"
 
 import {
@@ -5,6 +6,7 @@ import {
   Bell,
   ChevronsUpDown,
   CreditCard,
+  KeyRound,
   LogOut,
   Sparkles,
 } from "lucide-react"
@@ -29,6 +31,7 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
+import { useRouter } from "next/navigation"
 
 export function NavUser({
   user,
@@ -42,6 +45,7 @@ export function NavUser({
   onLogout?: () => void
 }) {
   const { isMobile } = useSidebar()
+  const router = useRouter()
   const handleLogout = () => {
     // Add your logout logic here
     // For example:
@@ -83,6 +87,12 @@ export function NavUser({
                 </div>
               </div>
             </DropdownMenuLabel>
+            <DropdownMenuGroup>
+              <DropdownMenuItem onClick={() => router.push("/settings/password")}>
+                <KeyRound className="mr-2 h-4 w-4" />
+                <span>Change Password</span>
+              </DropdownMenuItem>
+            </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout}>
               <LogOut />

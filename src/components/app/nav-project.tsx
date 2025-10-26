@@ -1,11 +1,12 @@
-"use client"
+// src/components/app/nav-project.tsx
+"use client";
 
-import { ChevronRight, Circle } from "lucide-react"
+import { ChevronRight, Circle } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -15,26 +16,28 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
+import { useSession } from "@/providers/SessionProvider"
 
-import type { ProjectItem } from "@/providers/ProjectListProvider"
-import { title } from "process"
+import type { ProjectItem } from "@/providers/ProjectListProvider";
+import { title } from "process";
 
 function slugify(title: string) {
-  return title.replace(/\s+/g, "_")
+  return title.replace(/\s+/g, "_");
 }
 
 export function NavProjects({ projects }: { projects: ProjectItem[] }) {
+  const { user } = useSession()
   return (
     <SidebarGroup>
       <SidebarGroupLabel>Projects</SidebarGroupLabel>
       <SidebarMenu>
         {projects.map((project) => {
-          const slug = slugify(project.projectName)
+          const slug = slugify(project.projectName);
           const subItems = [
             { title: "Overview", path: `/overview` },
             { title: "Task", path: `/tasks` },
-          ]
+          ];
           return (
             <Collapsible
               key={project.projectId}
@@ -63,20 +66,22 @@ export function NavProjects({ projects }: { projects: ProjectItem[] }) {
                       </SidebarMenuSubItem>
                     ))}
 
-                    <SidebarMenuSubItem key="Users">
-                      <SidebarMenuSubButton asChild>
-                        <a href={`/${slug}/users`}>
-                          <span>Users</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
+                    {user?.role !== "USER" && (
+                      <SidebarMenuSubItem key="Users">
+                        <SidebarMenuSubButton asChild>
+                          <a href={`/${slug}/users`}>
+                            <span>Users</span>
+                          </a>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    )}
                   </SidebarMenuSub>
                 </CollapsibleContent>
               </SidebarMenuItem>
             </Collapsible>
-          )
+          );
         })}
       </SidebarMenu>
     </SidebarGroup>
-  )
+  );
 }

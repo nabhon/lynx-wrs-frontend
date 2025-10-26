@@ -8,26 +8,52 @@ import { priorities, statuses } from "./data/data"
 import { Task } from "./data/schema"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
+import { useParams, useRouter } from "next/navigation"
+
+function TitleCell({ row }: { row: any }) {
+  const router = useRouter()
+  const params = useParams()
+  const slug = params?.project_name as string
+
+  return (
+    <button
+      className="text-black underline text-left truncate min-w-[500px] font-medium"
+      onClick={(e) => {
+        e.stopPropagation()
+        router.push(`/${slug}/tasks/${row.original.id}`)
+      }}
+      title={row.original.title}
+    >
+      {row.original.title}
+    </button>
+  )
+}
 
 export const columns: ColumnDef<Task>[] = [
-  // ✅ Row selection column
-  { id: "select", 
+   {
+    id: "select",
     header: ({ table }) => (
-      <Checkbox 
-      checked={ 
-        table.getIsAllPageRowsSelected() || 
-        (table.getIsSomePageRowsSelected() && "indeterminate") 
-      } onCheckedChange={(value) => 
-        table.toggleAllPageRowsSelected(!!value)} 
-        aria-label="Select all" 
-        className="translate-y-[2px]" 
-        /> 
-      ), 
-      cell: ({ row }) => ( 
-      <Checkbox 
-      checked={row.getIsSelected()} 
-      onCheckedChange={(value) => row.toggleSelected(!!value)} aria-label="Select row" className=" translate-y-[2px]" /> ), enableSorting: false, enableHiding: false, },
-  {
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+        aria-label="Select all"
+        className="translate-y-[2px]"
+      />
+    ),
+    cell: ({ row }) => (
+      <Checkbox
+        checked={row.getIsSelected()}
+        onCheckedChange={(value) => row.toggleSelected(!!value)}
+        aria-label="Select row"
+        className="translate-y-[2px]"
+      />
+    ),
+    enableSorting: false,
+    enableHiding: false,
+  },{
     accessorKey: "cycleCount",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Cycle" />
@@ -65,6 +91,7 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+
   // ✅ Type
   {
     accessorKey: "type",
@@ -76,18 +103,12 @@ export const columns: ColumnDef<Task>[] = [
     enableSorting: false,
   },
   // ✅ Title
-  {
+ {
     accessorKey: "title",
     header: ({ column }) => (
       <DataTableColumnHeader column={column} title="Title" />
     ),
-    cell: ({ row }) => {
-      return (
-        <div className="flex">
-          <span className="truncate min-w-[500px] font-medium">{row.getValue("title")}</span>
-        </div>
-      )
-    },
+    cell: ({ row }) => <TitleCell row={row} />, // ⬅️ ใช้คอมโพเนนต์ใหม่
     enableSorting: false,
   },
   // ✅ Assigned To
