@@ -1,47 +1,55 @@
 "use client";
 import DueTable from "./due-table";
-import { useProject } from "@/providers/ProjectProvider"
-import TaskOverviewCards from "@/components/task-overview";
+import { useProject } from "@/providers/ProjectProvider";
+import OverviewHeaderCards from "./OverviewHeaderCards";
 import TaskPieChart from "./task-pie-chart";
 import BurndownChart from "./burndown";
 import VelocityChart from "./velocity";
 
 export default function Page() {
-    const { project, loading, error } = useProject();
-    if (loading) return <div></div>;
-    if (error) return <div>Error: {error}</div>;
-    if (!project) return <div>No project found</div>;
+  const { project, loading, error } = useProject();
+  if (loading) return <div />;
+  if (error) return <div>Error: {error}</div>;
+  if (!project) return <div>No project found</div>;
+
   return (
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid grid-cols-12 gap-4 h-fit">
-            <div className="flex col-span-12">
-                <TaskOverviewCards tasks={project!.items as any} />
-            </div>
-            <div className="flex flex-row col-span-6 gap-4 ">
-                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto">
-                    <DueTable />
-                </div>
-            </div>
-            <div className="flex flex-row col-span-6 gap-4 ">
-                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
-                    <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
-                    <TaskPieChart />
-                </div>
-            </div>
-            <div className="flex flex-row col-span-6 gap-4 ">
-                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
-                    <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
-                    <BurndownChart />
-                </div>
-            </div>
-            <div className="flex flex-row col-span-6 gap-4 ">
-                <div className="bg-mute shadow-lg p-4 flex-1 rounded-xl border border-primary overflow-auto relative">
-                    <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
-                    <VelocityChart />
-                </div>
-            </div>
+    <div className="flex-1 space-y-6 px-4 md:px-6 pb-6">
+      {/* หัวข้อ */}
+      <h1 className="text-2xl font-semibold">Overview</h1>
+
+      {/* การ์ด 4 ใบ สไตล์เดียวกับ Dashboard */}
+      <OverviewHeaderCards tasks={project.items as any} />
+
+      {/* แถวกราฟ/ตาราง */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+          <span className="absolute left-4 top-4 text-lg font-semibold">Upcoming Deadlines</span>
+          <div className="pt-8">
+            <DueTable />
           </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
         </div>
-  )
+
+        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+          <span className="absolute left-4 top-4 text-lg font-semibold">Task Status</span>
+          <div className="pt-8">
+            <TaskPieChart />
+          </div>
+        </div>
+
+        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+          <span className="absolute left-4 top-4 text-lg font-semibold">Burndown</span>
+          <div className="pt-8">
+            <BurndownChart />
+          </div>
+        </div>
+
+        <div className="relative rounded-2xl border border-violet-200/60 bg-white/90 shadow-sm p-4">
+          <span className="absolute left-4 top-4 text-lg font-semibold">Velocity</span>
+          <div className="pt-8">
+            <VelocityChart />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
