@@ -32,7 +32,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                   </div>
                 </header>
                 {/* 👇 children will replace the content section */}
-                {children}
+                <div className="px-6 ">{children}</div>
               </UserListProvider>
             </SidebarInset>
           </SidebarProvider>
