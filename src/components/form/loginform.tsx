@@ -52,14 +52,13 @@ export function LoginForm({
       {/* </div> */}
 
       {/*Card container */}
-      <div className="w-full  max-w-[560px] rounded-2xl">
-        <Card className="md:flex relative z-10  w-full font-popins border border-white/20 bg-white/5 backdrop-blur-xl shadow-2xl">
-
+      <div className="w-full px-4 md:px-0 max-w-[560px] rounded-2xl">
+        <Card className="flex relative z-10 ease-in-out w-full  border border-white/20 bg-white/5 backdrop-blur-xl shadow-2xl">
           {/* โลโก้ลอย มุมขวาบน */}
-          <div className="absolute top-5 right-9 w-16 h-16 rounded-full  shadow-lg bg-white/80 backdrop-blur">
+          <div className="absolute top-5 right-9 w-16 h-16 rounded-full hidden md:block shadow-lg bg-white/80 backdrop-blur">
             <img src="/logo.png" alt="Logo" className="object-cover w-full h-full rounded-full " />
           </div>
-          <form className="p-6 md:p-8">
+          <form className="p-6 md:p-6">
             <FieldGroup>
               {/* Text first */}
               <div className="flex flex-col items-center text-center">

@@ -26,8 +26,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Lynx Work Request System",
-  description: "Lynx Work Request System For Tracking Members Task",
+  title: "Lynx Desk",
+  description: "Lynx Desk For Tracking Members Task",
 };
 
 export default function RootLayout({

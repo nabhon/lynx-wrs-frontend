@@ -1,28 +1,54 @@
-import { AppSidebar } from "@/components/app/sidebar"
+// src/app/dashboard/page.tsx
+import { getDashboardOverview, getUserGrowth } from "@/services/dashboardService";
 import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb"
-import { Separator } from "@/components/ui/separator"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+  getMyWorkingTasksService,
+  getMyPendingReviewTasksService,
+  type MyTaskDto,
+} from "@/services/taskService";
+import DashboardClient from "./DashboardClient";
 
-export default function Page() {
+export default async function DashboardPage() {
+  // ----- ข้อมูลฝั่ง ADMIN (ไม่ใช้ก็ไม่เป็นไรสำหรับ user/mod) -----
+  const rawOverview = await getDashboardOverview().catch(() => null);
+  const growth = await getUserGrowth(new Date().getFullYear()).catch(() => ({ items: [] as {month:number;count:number}[] }));
+
+  // map เผื่อ backend เปลี่ยนชื่อคีย์
+  const overview = {
+    totalUsers:
+      rawOverview?.totalUsers ??
+      rawOverview?.total_users ??
+      rawOverview?.users ??
+      rawOverview?.userCount ??
+      0,
+    totalProjects:
+      rawOverview?.totalProjects ??
+      rawOverview?.total_projects ??
+      rawOverview?.projects ??
+      rawOverview?.projectCount ??
+      0,
+    activeTasks:
+      rawOverview?.activeTasks ?? rawOverview?.active_tasks ?? rawOverview?.active ?? 0,
+    overdueTasks:
+      rawOverview?.overdueTasks ?? rawOverview?.overdue_tasks ?? rawOverview?.overdue ?? 0,
+  };
+
+  // ----- ข้อมูลฝั่ง USER/MODERATOR -----
+  const myWorking = await getMyWorkingTasksService().catch(
+    () => ({ items: [] as MyTaskDto[] })
+  );
+  const myPending = await getMyPendingReviewTasksService().catch(
+    () => ({ items: [] as MyTaskDto[] })
+  );
+
   return (
-        <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
-          <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-            <div className="bg-muted/50 aspect-video rounded-xl" />
-          </div>
-          <div className="bg-muted/50 min-h-[100vh] flex-1 rounded-xl md:min-h-min" />
-        </div>
-  )
+    <div className="space-y-6">
+      <h1 className="text-2xl font-semibold">Dashboard</h1>
+      <DashboardClient
+        overview={overview}
+        growth={growth.items}
+        myWorking={myWorking.items ?? []}
+        myPending={myPending.items ?? []}
+      />
+    </div>
+  );
 }

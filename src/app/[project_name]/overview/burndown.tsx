@@ -48,36 +48,46 @@ export default function BurndownChart() {
     new Set(filteredByCycle.map((t) => t.sprintCount))
   ).sort((a, b) => a - b);
 
-  // 📊 Aggregate remaining points per sprint
+  // 📊 Prepare Burndown data
   const chartData = useMemo(() => {
-    if (filteredByCycle.length === 0) return [];
+    if (filteredByCycle.length === 0 || sprintsInCycle.length === 0) return [];
 
     const totalPoints = filteredByCycle.reduce(
       (sum, t) => sum + (t.estimatePoints || 0),
       0
     );
 
-    let remainingPoints = totalPoints;
-    const data: { sprint: number; remaining: number; done: number }[] = [];
+    const totalSprints = sprintsInCycle.length;
+    const idealStep = totalPoints / totalSprints;
 
-    for (const sprint of sprintsInCycle) {
+    let remainingPoints = totalPoints;
+    const data: { sprint: number; ideal: number; actual: number }[] = [];
+
+    for (let i = 0; i < totalSprints; i++) {
+      const sprint = sprintsInCycle[i];
       const sprintTasks = filteredByCycle.filter(
         (t) => t.sprintCount === sprint
       );
 
-      // Completed points in this sprint
+      // ✅ Actual burn — completed points in this sprint
       const donePoints = sprintTasks
         .filter((t) => t.status === "DONE")
         .reduce((sum, t) => sum + (t.estimatePoints || 0), 0);
 
       remainingPoints -= donePoints;
 
+      // 🟦 Ideal line — evenly decreasing
+      const idealRemaining = Math.max(totalPoints - idealStep * (i + 1), 0);
+
       data.push({
         sprint,
-        done: donePoints,
-        remaining: Math.max(remainingPoints, 0),
+        ideal: idealRemaining,
+        actual: Math.max(remainingPoints, 0),
       });
     }
+
+    // Include starting point for smoother line (optional)
+    data.unshift({ sprint: 0, ideal: totalPoints, actual: totalPoints });
 
     return data;
   }, [filteredByCycle, sprintsInCycle]);
@@ -151,24 +161,29 @@ export default function BurndownChart() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis
             dataKey="sprint"
-            label={{ value: "Sprint", position: "bottom", dy: 24 }}
+            label={{ value: "Sprint", position: "bottom", dy: 0 }}
           />
           <YAxis label={{ value: "Points", angle: -90, position: "insideLeft" }} />
           <Tooltip />
-          <Legend />
+          <Legend verticalAlign="top" align="center" />
+          {/* 🟦 Ideal line */}
           <Line
             type="monotone"
-            dataKey="remaining"
-            stroke="#2563eb"
+            dataKey="ideal"
+            stroke="#9ca3af"
             strokeWidth={2}
-            dot
+            strokeDasharray="5 5"
+            dot={false}
+            name="Ideal"
           />
+          {/* 🟩 Actual line */}
           <Line
             type="monotone"
-            dataKey="done"
-            stroke="#22c55e"
-            strokeWidth={2}
+            dataKey="actual"
+            stroke="#2563eb"
+            strokeWidth={3}
             dot
+            name="Actual"
           />
         </LineChart>
       </ResponsiveContainer>

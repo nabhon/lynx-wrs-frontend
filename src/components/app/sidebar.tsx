@@ -27,7 +27,6 @@ const menu = {
   items: [
     { name: "Dashboard", value: "dashboard", icon: Bot },
     { name: "Tasks", value: "tasks", icon: SquareTerminal },
-    { name: "Reports", value: "reports", icon: PieChart },
   ]
 }
 
@@ -35,7 +34,6 @@ const menu = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { projects } = useProjectList();
   const { user, logout } = useSession();
-  console.log("Sidebar User:", user);
 
   return (
     <Sidebar collapsible="icon" {...props}>
