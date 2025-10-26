@@ -1,19 +1,35 @@
 "use client";
+
 import { useSession } from "@/providers/SessionProvider";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function home() {
-  const { isAuthenticated } = useSession();
+export default function Home() {
+  const { isAuthenticated, loading } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      router.push("/login");
+    // Only run redirect logic once loading is complete
+    if (!loading) {
+      if (isAuthenticated) {
+        router.push("/dashboard");
+      } else {
+        router.push("/login");
+      }
     }
-  }, [isAuthenticated]);
+  }, [isAuthenticated, loading, router]);
+
+  // Optional: show a simple loading state while checking session
+  if (loading) {
+    return (
+      <div className="">
+        <p>Loading...</p>
+      </div>
+    );
+  }
+
+  // You could also return null while redirecting
   return (
-    <div className="bg-muted flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-    </div>
-  )
+    null
+  );
 }
