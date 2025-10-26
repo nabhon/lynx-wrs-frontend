@@ -17,7 +17,7 @@ function TitleCell({ row }: { row: any }) {
 
   return (
     <button
-      className="text-black underline text-left truncate min-w-[500px] font-medium"
+      className="text-black underline text-left truncate min-w-[300px] font-medium"
       onClick={(e) => {
         e.stopPropagation()
         router.push(`/${slug}/tasks/${row.original.id}`)

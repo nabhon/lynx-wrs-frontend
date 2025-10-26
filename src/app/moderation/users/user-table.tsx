@@ -128,7 +128,7 @@ const UsersTable = () => {
       id: 'actions',
       header: 'Actions',
       cell: ({ row }) => (
-        <div className="flex justify-end">
+        <div className="flex justify-start">
           <AlertDialog>
             <AlertDialogTrigger asChild>
               <Button
@@ -190,7 +190,7 @@ const UsersTable = () => {
   // 🧩 Render table
   //
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 flex-1">
       <table className="w-full border-collapse text-sm">
         <thead className="border-b">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -217,7 +217,9 @@ const UsersTable = () => {
       </table>
 
       {/* ✅ Pagination */}
-      <DataTablePagination table={table} />
+      <div className='mb-2'>
+        <DataTablePagination table={table} />
+      </div>
     </div>
   );
 };

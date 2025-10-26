@@ -159,7 +159,7 @@ const ProjectsTable = () => {
   // 🧩 Render table
   //
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 flex-1">
       <table className="w-full border-collapse text-sm">
         <thead className="border-b">
           {table.getHeaderGroups().map((headerGroup) => (
@@ -186,7 +186,9 @@ const ProjectsTable = () => {
       </table>
 
       {/* ✅ Pagination */}
-      <DataTablePagination table={table} />
+      <div className="mb-2">
+        <DataTablePagination table={table} />
+      </div>
     </div>
   );
 };
