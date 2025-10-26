@@ -27,7 +27,6 @@ const menu = {
   items: [
     { name: "Dashboard", value: "dashboard", icon: Bot },
     { name: "Tasks", value: "tasks", icon: SquareTerminal },
-    { name: "Reports", value: "reports", icon: PieChart },
   ]
 }
 
