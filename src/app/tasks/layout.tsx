@@ -22,7 +22,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
             {/* 👇 เพิ่ม padding + จำกัดความกว้าง เพื่อไม่ให้การ์ดชิดขอบจอ */}
             <div className="px-6 pb-6">
-              <main className="max-w-[1400px] mx-auto">
+              <main className="w-full mx-auto">
                 {children}
               </main>
             </div>
