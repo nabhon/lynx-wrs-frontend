@@ -1,8 +1,7 @@
 // src/components/app/nav-main.tsx
 "use client"
 import { useRouter } from "next/navigation"
-import { type LucideIcon } from "lucide-react"
-import { Presentation, User } from "lucide-react"
+import { type LucideIcon, Presentation, User } from "lucide-react"
 import {
   SidebarGroup,
   SidebarGroupLabel,
@@ -23,6 +22,10 @@ export function NavMain({
 }) {
   const router = useRouter()
   const { user } = useSession()
+
+  const isAdmin = user?.role === "ADMIN"
+  const canModerate = isAdmin || user?.role === "MODERATOR"
+
   const handleNavigate = (value: string) => {
     router.push(`/${value}`)
   }
@@ -39,23 +42,26 @@ export function NavMain({
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}
-        { (user?.role === "MODERATOR" || user?.role === "ADMIN") &&
-          <div>
-            <SidebarMenuItem key="Manage Projects">
+
+        {/* MODERATOR & ADMIN: Manage Projects */}
+        {canModerate && (
+          <SidebarMenuItem key="Manage Projects">
             <SidebarMenuButton onClick={() => handleNavigate("moderation/projects")}>
               <Presentation />
               <span>Manage Projects</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-            <SidebarMenuItem key="Manage Users">
+        )}
+
+        {/* ADMIN only: Manage Users */}
+        {isAdmin && (
+          <SidebarMenuItem key="Manage Users">
             <SidebarMenuButton onClick={() => handleNavigate("moderation/users")}>
               <User />
               <span>Manage Users</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
-          </div>
-        }
-
+        )}
       </SidebarMenu>
     </SidebarGroup>
   )
