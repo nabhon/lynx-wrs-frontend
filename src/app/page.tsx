@@ -23,7 +23,7 @@ export default function Home() {
   if (loading) {
     return (
       <div className="">
-        <p>Loading...</p>
+        <p></p>
       </div>
     );
   }

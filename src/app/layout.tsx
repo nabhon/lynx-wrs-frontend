@@ -26,7 +26,7 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Lynx Desk",
+  title: "LynxOps",
   description: "Lynx Desk For Tracking Members Task",
 };
 
